@@ -32,7 +32,7 @@ function Piece(props) {
       className="piece"
       style={{ backgroundImage: `url(${pieceImg})` }}
       onClick={() => {
-        return props.showMoves(props.piece.pieceType, props.index);
+        return props.showMoves(props.index);
       }}
     ></div>
   );
