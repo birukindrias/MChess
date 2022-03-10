@@ -135,7 +135,8 @@ function movePiece(
   setBoardProps,
   editMoveAction,
   currentPieceIndex,
-  toIndex
+  toIndex,
+  undo
 ) {
   if (isCastling(board, currentPieceIndex, toIndex, boardProps)) {
     moveAudio.play();
@@ -194,6 +195,9 @@ function movePiece(
     }
     return returnObj;
   });
+  if (!undo) {
+    moves.push([currentPieceIndex, toIndex]);
+  }
 }
 
 function getMoves(board, boardProps, index) {
@@ -293,6 +297,21 @@ function showPossibleMoves(
 
 const moveAudio = new Audio(moveSound);
 const captureAudio = new Audio(captureSound);
+const moves = [];
+
+function undoMove(board, setBoard, boardProps, setBoardProps, editMoveAction) {
+  movePiece(
+    board,
+    setBoard,
+    boardProps,
+    setBoardProps,
+    editMoveAction,
+    moves[moves.length - 1][1],
+    moves[moves.length - 1][0],
+    true
+  );
+  moves.pop();
+}
 
 function Board() {
   const [board, setBoard] = useState(orgBoard);
@@ -314,42 +333,51 @@ function Board() {
   });
 
   return (
-    <div className="board">
-      {board.map((piece, i) => {
-        return (
-          <Square
-            piece={piece}
-            squareColor={getSquareColor(i)}
-            key={i}
-            index={i}
-            showMoves={(index) => {
-              showPossibleMoves(
-                index,
-                board,
-                boardProps,
-                setBoardProps,
-                editMoveAction
-              );
-            }}
-            movable={moveAction.movableSquares.includes(i)}
-            isMoving={boardProps.isMoving}
-            movePiece={(toIndex) => {
-              movePiece(
-                board,
-                setBoard,
-                boardProps,
-                setBoardProps,
-                editMoveAction,
-                moveAction.pieceIndex,
-                toIndex
-              );
-            }}
-            selected={moveAction.pieceIndex}
-            inCheck={boardProps[`${piece.color}InCheck`]}
-          />
-        );
-      })}
-    </div>
+    <>
+      <div className="board">
+        {board.map((piece, i) => {
+          return (
+            <Square
+              piece={piece}
+              squareColor={getSquareColor(i)}
+              key={i}
+              index={i}
+              showMoves={(index) => {
+                showPossibleMoves(
+                  index,
+                  board,
+                  boardProps,
+                  setBoardProps,
+                  editMoveAction
+                );
+              }}
+              movable={moveAction.movableSquares.includes(i)}
+              isMoving={boardProps.isMoving}
+              movePiece={(toIndex) => {
+                movePiece(
+                  board,
+                  setBoard,
+                  boardProps,
+                  setBoardProps,
+                  editMoveAction,
+                  moveAction.pieceIndex,
+                  toIndex
+                );
+              }}
+              selected={moveAction.pieceIndex}
+              inCheck={boardProps[`${piece.color}InCheck`]}
+            />
+          );
+        })}
+      </div>
+      <button
+        onClick={() => {
+          undoMove(board, setBoard, boardProps, setBoardProps, editMoveAction);
+        }}
+      >
+        Undo
+      </button>
+    </>
   );
 }
 

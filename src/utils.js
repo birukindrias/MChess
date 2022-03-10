@@ -87,6 +87,7 @@ function checkCanAttackKing(board, index, kingIndex) {
       }
       break;
   }
+  return false;
 }
 
 export function inCheck(board, kingColor) {
@@ -135,9 +136,9 @@ function checkModifiedBoardInCheck(orgBoard, kingColor, fromIndex, toIndex) {
 }
 
 export function checkCheckmated(board, kingColor) {
-  let isCheckmated = false;
+  let isCheckmated = true;
   for (let curIndex = 0; curIndex < board.length; curIndex++) {
-    if (isCheckmated) break;
+    if (!isCheckmated) break;
     const piece = board[curIndex];
     if (piece === "" || piece.color !== kingColor) continue;
     let moves = [];
@@ -164,12 +165,12 @@ export function checkCheckmated(board, kingColor) {
     }
     for (let toIndex of moves) {
       if (!checkModifiedBoardInCheck(board, kingColor, curIndex, toIndex)) {
-        isCheckmated = true;
+        isCheckmated = false;
         break;
       }
     }
   }
-  return !isCheckmated;
+  return isCheckmated;
 }
 
 export function checkPromotion(board, curIndex, toIndex) {
@@ -240,4 +241,12 @@ export function castledBoard(board, kingIndex, toIndex) {
       break;
   }
   return finalBoard;
+}
+
+function notationToRowCol(notation) {
+  if (notation.length > 2) throw Error();
+  return {
+    row: notation[1],
+    col: notation.charCodeAt(0) - 96,
+  };
 }

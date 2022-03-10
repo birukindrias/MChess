@@ -1,13 +1,12 @@
+:root {
+  --primary: #4880ad;
+  --secondary: #778fa2;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-}
-
-:root {
-  /* --brown: #440004; */
-  --primary: #4880ad;
-  --secondary: #778fa2;
 }
 
 #root {
