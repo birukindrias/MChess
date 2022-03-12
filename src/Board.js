@@ -1,4 +1,5 @@
 import Square from "./Square";
+import GameInfo from "./GameInfo";
 import { useState } from "react";
 import {
   getSquareColor,
@@ -126,6 +127,8 @@ function isCastling(board, currentIndex, toIndex, boardProps) {
       } else {
         return false;
       }
+    default:
+      return false;
   }
 }
 function movePiece(
@@ -300,6 +303,9 @@ const captureAudio = new Audio(captureSound);
 const moves = [];
 
 function undoMove(board, setBoard, boardProps, setBoardProps, editMoveAction) {
+  if (moves.length <= 0 || boardProps.gameEnd) {
+    return;
+  }
   movePiece(
     board,
     setBoard,
@@ -370,13 +376,20 @@ function Board() {
           );
         })}
       </div>
-      <button
-        onClick={() => {
-          undoMove(board, setBoard, boardProps, setBoardProps, editMoveAction);
-        }}
-      >
-        Undo
-      </button>
+      <GameInfo
+        white="jaminux"
+        black="kebede"
+        currentTurn={boardProps.currentMove}
+        timeFormat="15:00"
+        run={false}
+      />
+      {/* <button */}
+      {/*   onClick={() => { */}
+      {/*     undoMove(board, setBoard, boardProps, setBoardProps, editMoveAction); */}
+      {/*   }} */}
+      {/* > */}
+      {/*   Undo */}
+      {/* </button> */}
     </>
   );
 }

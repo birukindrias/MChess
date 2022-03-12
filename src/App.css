@@ -10,9 +10,9 @@
 }
 
 #root {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 0.2fr;
+  place-items: center;
   background-color: #161512;
   height: 100vh;
 }
@@ -86,4 +86,11 @@
 .kingCheck {
   background-color: red;
   background-image: none;
+}
+
+.game-info {
+  color: white;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 25px;
 }
