@@ -87,7 +87,6 @@ function checkCanAttackKing(board, index, kingIndex) {
       }
       break;
   }
-  return false;
 }
 
 export function inCheck(board, kingColor) {
@@ -189,22 +188,13 @@ export function checkCastlingRights(
   returnObj
 ) {
   if (pieceType === "K") {
-    returnObj.canWhiteKingSideCastle =
-      boardProps.currentMove === "white"
-        ? false
-        : boardProps.canWhiteKingSideCastle;
-    returnObj.canWhiteQueenSideCastle =
-      boardProps.currentMove === "white"
-        ? false
-        : boardProps.canWhiteQueenSideCastle;
-    returnObj.canBlackKingSideCastle =
-      boardProps.currentMove === "black"
-        ? false
-        : boardProps.canBlackKingSideCastle;
-    returnObj.canBlackQueenSideCastle =
-      boardProps.currentMove === "black"
-        ? false
-        : boardProps.canBlackQueenSideCastle;
+    if (boardProps.currentMove === "white") {
+      returnObj.canWhiteKingSideCastle = false;
+      returnObj.canWhiteQueenSideCastle = false;
+    } else {
+      returnObj.canBlackKingSideCastle = false;
+      returnObj.canBlackQueenSideCastle = false;
+    }
   } else if (pieceType === "R" && [0, 7, 56, 63].includes(currentPieceIndex)) {
     switch (currentPieceIndex) {
       case 7:
@@ -249,4 +239,60 @@ function notationToRowCol(notation) {
     row: notation[1],
     col: notation.charCodeAt(0) - 96,
   };
+}
+
+export function getMoves(board, boardProps, index) {
+  let movableIndexes = [];
+  const pieceType = board[index].pieceType;
+  switch (pieceType) {
+    case "R":
+      movableIndexes = movableIndexes.concat(getRookMoves(board, index));
+      break;
+    case "p":
+      movableIndexes = movableIndexes.concat(getPawnMoves(board, index));
+      break;
+    case "H":
+      movableIndexes = movableIndexes.concat(getKnightMoves(board, index));
+      break;
+    case "B":
+      movableIndexes = movableIndexes.concat(getBishopMoves(board, index));
+      break;
+    case "K":
+      movableIndexes = movableIndexes.concat(
+        getKingMoves(
+          board,
+          index,
+          boardProps[
+            `can${
+              boardProps.currentMove.charAt(0).toUpperCase() +
+              boardProps.currentMove.slice(1)
+            }KingSideCastle`
+          ],
+          boardProps[
+            `can${
+              boardProps.currentMove.charAt(0).toUpperCase() +
+              boardProps.currentMove.slice(1)
+            }QueenSideCastle`
+          ],
+          boardProps[`${boardProps.currentMove}InCheck`]
+        )
+      );
+      break;
+    case "Q":
+      movableIndexes = movableIndexes.concat(getRookMoves(board, index));
+      movableIndexes = movableIndexes.concat(getBishopMoves(board, index));
+  }
+  // don't allow moves that don't block the check
+  if (boardProps[`${boardProps.currentMove}InCheck`] || pieceType === "K") {
+    movableIndexes = movableIndexes.filter((toIndex) => {
+      if (board[toIndex] === "") {
+        return !inCheck(swap(board, index, toIndex), boardProps.currentMove);
+      } else {
+        let tmp = [...board];
+        tmp[toIndex] = "";
+        return !inCheck(swap(tmp, toIndex, index), boardProps.currentMove);
+      }
+    });
+  }
+  return movableIndexes;
 }

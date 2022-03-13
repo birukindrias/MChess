@@ -14,7 +14,7 @@ function App() {
         black="kebede"
         currentTurn={curTurn}
         timeFormat="10:00"
-        run={false}
+        run={true}
         gameEnd={setGameEnd}
       />
     </>

@@ -1,5 +1,5 @@
 import Square from "./Square";
-import { useState } from "react";
+import { useReducer, useState } from "react";
 import {
   getSquareColor,
   swap,
@@ -8,6 +8,7 @@ import {
   checkPromotion,
   checkCastlingRights,
   castledBoard,
+  getMoves,
 } from "./utils";
 import {
   getPawnMoves,
@@ -73,14 +74,10 @@ function setInCheck(board, boardProps, setBoardProps) {
       const kingPiece = document.querySelectorAll(".square")[kingIndex];
       kingPiece.classList.add("kingCheck");
 
-      setBoardProps({ ...boardProps, gameEnd: true });
+      setBoardProps({ action: "end-game" });
       return;
     } else {
-      setBoardProps((boardProps) => {
-        let finalObj = { ...boardProps };
-        finalObj[`${kingColor}InCheck`] = true;
-        return finalObj;
-      });
+      setBoardProps({ action: "in-check", kingColor: kingColor });
     }
   }
 }
@@ -89,39 +86,28 @@ function isCastling(board, currentIndex, toIndex, boardProps) {
   if (board[currentIndex].pieceType !== "K") {
     return false;
   }
+  const color = board[currentIndex].color;
   switch (toIndex) {
     case 1:
-      if (
-        board[currentIndex].color === "white" &&
-        boardProps.canWhiteKingSideCastle
-      ) {
+      if (color === "white" && boardProps.canWhiteKingSideCastle) {
         return true;
       } else {
         return false;
       }
     case 5:
-      if (
-        board[currentIndex].color === "white" &&
-        boardProps.canWhiteQueenSideCastle
-      ) {
+      if (color === "white" && boardProps.canWhiteQueenSideCastle) {
         return true;
       } else {
         return false;
       }
     case 57:
-      if (
-        board[currentIndex].color === "black" &&
-        boardProps.canBlackKingSideCastle
-      ) {
+      if (color === "black" && boardProps.canBlackKingSideCastle) {
         return true;
       } else {
         return false;
       }
     case 61:
-      if (
-        board[currentIndex].color === "black" &&
-        boardProps.canBlackQueenSideCastle
-      ) {
+      if (color === "black" && boardProps.canBlackQueenSideCastle) {
         return true;
       } else {
         return false;
@@ -130,16 +116,9 @@ function isCastling(board, currentIndex, toIndex, boardProps) {
       return false;
   }
 }
-function movePiece(
-  board,
-  setBoard,
-  boardProps,
-  setBoardProps,
-  editMoveAction,
-  currentPieceIndex,
-  toIndex,
-  undo
-) {
+
+function movePiece(board, setBoard, boardProps, dispatch, toIndex) {
+  const currentPieceIndex = boardProps.movingPiece;
   if (isCastling(board, currentPieceIndex, toIndex, boardProps)) {
     moveAudio.play();
     setBoard(castledBoard(board, currentPieceIndex, toIndex));
@@ -154,11 +133,7 @@ function movePiece(
       }
       return swap(board, currentPieceIndex, toIndex);
     });
-    setInCheck(
-      swap(board, currentPieceIndex, toIndex),
-      boardProps,
-      setBoardProps
-    );
+    setInCheck(swap(board, currentPieceIndex, toIndex), boardProps, dispatch);
   } else {
     let finalBoard = [...board];
     if (checkPromotion(board, currentPieceIndex, toIndex)) {
@@ -171,178 +146,86 @@ function movePiece(
     finalBoard = swap(finalBoard, toIndex, currentPieceIndex);
     setBoard(finalBoard);
     captureAudio.play();
-    setInCheck(finalBoard, boardProps, setBoardProps);
+    setInCheck(finalBoard, boardProps, dispatch);
   }
-  editMoveAction({ movableSquares: [], pieceIndex: null });
-  setBoardProps((boardProps) => {
-    let returnObj = { ...boardProps };
-    returnObj.isMoving = false;
-    returnObj.currentMove =
-      boardProps.currentMove === "white" ? "black" : "white";
-    // setTurn(returnObj.currentMove);
-    if (returnObj[`${boardProps.currentMove}InCheck`]) {
-      returnObj[`${boardProps.currentMove}InCheck`] = false;
-    }
-    if (
-      boardProps.canBlackQueenSideCastle ||
-      boardProps.canWhiteKingSideCastle ||
-      boardProps.canWhiteQueenSideCastle ||
-      boardProps.canBlackKingSideCastle
-    ) {
-      checkCastlingRights(
-        currentPieceIndex,
-        board[currentPieceIndex].pieceType,
-        boardProps,
-        returnObj
-      );
-    }
-    return returnObj;
-  });
-  if (!undo) {
-    moves.push([currentPieceIndex, toIndex]);
-  }
-}
-
-function getMoves(board, boardProps, index) {
-  let movableIndexes = [];
-  const pieceType = board[index].pieceType;
-  switch (pieceType) {
-    case "R":
-      movableIndexes = movableIndexes.concat(getRookMoves(board, index));
-      break;
-    case "p":
-      movableIndexes = movableIndexes.concat(getPawnMoves(board, index));
-      break;
-    case "H":
-      movableIndexes = movableIndexes.concat(getKnightMoves(board, index));
-      break;
-    case "B":
-      movableIndexes = movableIndexes.concat(getBishopMoves(board, index));
-      break;
-    case "K":
-      movableIndexes = movableIndexes.concat(
-        getKingMoves(
-          board,
-          index,
-          boardProps[
-            `can${
-              boardProps.currentMove.charAt(0).toUpperCase() +
-              boardProps.currentMove.slice(1)
-            }KingSideCastle`
-          ],
-          boardProps[
-            `can${
-              boardProps.currentMove.charAt(0).toUpperCase() +
-              boardProps.currentMove.slice(1)
-            }QueenSideCastle`
-          ],
-          boardProps[`${boardProps.currentMove}InCheck`]
-        )
-      );
-      break;
-    case "Q":
-      movableIndexes = movableIndexes.concat(getRookMoves(board, index));
-      movableIndexes = movableIndexes.concat(getBishopMoves(board, index));
-  }
-  // don't allow moves that don't block the check
-  if (boardProps[`${boardProps.currentMove}InCheck`] || pieceType === "K") {
-    movableIndexes = movableIndexes.filter((toIndex) => {
-      if (board[toIndex] === "") {
-        return !inCheck(swap(board, index, toIndex), boardProps.currentMove);
-      } else {
-        let tmp = [...board];
-        tmp[toIndex] = "";
-        return !inCheck(swap(tmp, toIndex, index), boardProps.currentMove);
-      }
-    });
-  }
-  return movableIndexes;
-}
-
-function showPossibleMoves(
-  index,
-  board,
-  boardProps,
-  setBoardProps,
-  editMoveAction
-) {
-  // Don't show possible moves if you're checkmated or if it's not your move
-  if (board[index].color !== boardProps.currentMove || boardProps.gameEnd) {
-    return;
-  }
-  const indexes = getMoves(board, boardProps, index);
-  editMoveAction((ms) => {
-    if (ms.pieceIndex === index) {
-      setBoardProps((boardProps) => {
-        return {
-          ...boardProps,
-          isMoving: false,
-        };
-      });
-      return {
-        movableSquares: [],
-        pieceIndex: null,
-      };
-    } else {
-      setBoardProps((boardProps) => {
-        return {
-          ...boardProps,
-          isMoving: true,
-        };
-      });
-      return {
-        movableSquares: indexes,
-        pieceIndex: index,
-      };
-    }
-  });
+  dispatch({ action: "moved-piece", board: board });
 }
 
 const moveAudio = new Audio(moveSound);
 const captureAudio = new Audio(captureSound);
-const moves = [];
 
-function undoMove(board, setBoard, boardProps, setBoardProps, editMoveAction) {
-  if (moves.length <= 0 || boardProps.gameEnd) {
-    return;
+const orgBoardProps = {
+  currentMove: "white",
+  isMoving: false,
+  movableSquares: [],
+  movingPiece: null,
+  canWhiteKingSideCastle: true,
+  canWhiteQueenSideCastle: true,
+  canBlackKingSideCastle: true,
+  canBlackQueenSideCastle: true,
+  whiteInCheck: false,
+  blackInCheck: false,
+  gameEnd: false,
+};
+
+function reducer(boardProps, action) {
+  switch (action.action) {
+    case "show-moves":
+      if (
+        action.board[action.index].color !== boardProps.currentMove ||
+        boardProps.gameEnd
+      ) {
+        return boardProps;
+      }
+      const indexes = getMoves(action.board, boardProps, action.index);
+      if (boardProps.movingPiece === action.index) {
+        return {
+          ...boardProps,
+          isMoving: false,
+          movableSquares: [],
+          movingPiece: null,
+        };
+      } else {
+        return {
+          ...boardProps,
+          isMoving: true,
+          movableSquares: indexes,
+          movingPiece: action.index,
+        };
+      }
+    case "end-game":
+      return {
+        ...boardProps,
+        gameEnd: true,
+      };
+    case "in-check":
+      let returnObj = { ...boardProps };
+      returnObj[`${action.kingColor}InCheck`] = true;
+      return returnObj;
+    case "moved-piece":
+      let finalObj = { ...boardProps };
+      finalObj.isMoving = false;
+      finalObj.currentMove =
+        boardProps.currentMove === "white" ? "black" : "white";
+      if (finalObj[`${boardProps.currentMove}InCheck`]) {
+        finalObj[`${boardProps.currentMove}InCheck`] = false;
+      }
+      finalObj.isMoving = false;
+      finalObj.movingPiece = null;
+      finalObj.movableSquares = [];
+      checkCastlingRights(
+        boardProps.movingPiece,
+        action.board[boardProps.movingPiece].pieceType,
+        boardProps,
+        finalObj
+      );
+      return finalObj;
   }
-  movePiece(
-    board,
-    setBoard,
-    boardProps,
-    setBoardProps,
-    editMoveAction,
-    moves[moves.length - 1][1],
-    moves[moves.length - 1][0],
-    true
-  );
-  moves.pop();
 }
 
 function Board(props) {
   const [board, setBoard] = useState(orgBoard);
-  const [moveAction, editMoveAction] = useState({
-    movableSquares: [],
-    pieceIndex: null,
-  });
-
-  const [boardProps, setBoardProps] = useState({
-    currentMove: "white",
-    isMoving: false,
-    canWhiteKingSideCastle: true,
-    canWhiteQueenSideCastle: true,
-    canBlackKingSideCastle: true,
-    canBlackQueenSideCastle: true,
-    whiteInCheck: false,
-    blackInCheck: false,
-    gameEnd: false,
-  });
-
-  if (props.gameEnd) {
-    setBoardProps((bp) => {
-      return { ...bp, gameEnd: true };
-    });
-  }
+  const [boardProps, dispatch] = useReducer(reducer, orgBoardProps);
 
   return (
     <>
@@ -355,43 +238,22 @@ function Board(props) {
               key={i}
               index={i}
               showMoves={(index) => {
-                showPossibleMoves(
-                  index,
-                  board,
-                  boardProps,
-                  setBoardProps,
-                  editMoveAction
-                );
+                dispatch({ action: "show-moves", index: index, board: board });
               }}
-              movable={moveAction.movableSquares.includes(i)}
+              movable={boardProps.movableSquares.includes(i)}
               isMoving={boardProps.isMoving}
               movePiece={(toIndex) => {
-                movePiece(
-                  board,
-                  setBoard,
-                  boardProps,
-                  setBoardProps,
-                  editMoveAction,
-                  moveAction.pieceIndex,
-                  toIndex
-                );
+                movePiece(board, setBoard, boardProps, dispatch, toIndex);
                 props.setTurn(
                   boardProps.currentMove === "white" ? "black" : "white"
                 );
               }}
-              selected={moveAction.pieceIndex}
+              selected={boardProps.movingPiece}
               inCheck={boardProps[`${piece.color}InCheck`]}
             />
           );
         })}
       </div>
-      {/* <button */}
-      {/*   onClick={() => { */}
-      {/*     undoMove(board, setBoard, boardProps, setBoardProps, editMoveAction); */}
-      {/*   }} */}
-      {/* > */}
-      {/*   Undo */}
-      {/* </button> */}
     </>
   );
 }
