@@ -9,14 +9,8 @@ import {
   checkCastlingRights,
   castledBoard,
   getMoves,
+  isCastling,
 } from "./utils";
-import {
-  getPawnMoves,
-  getBishopMoves,
-  getRookMoves,
-  getKnightMoves,
-  getKingMoves,
-} from "./pieceMoves";
 import moveSound from "./assets/sounds/Move.ogg";
 import captureSound from "./assets/sounds/Capture.ogg";
 
@@ -58,6 +52,20 @@ const orgBoard = [
     { color: "black", pieceType: "R" },
   ]);
 
+const orgBoardProps = {
+  currentMove: "white",
+  isMoving: false,
+  movableSquares: [],
+  movingPiece: null,
+  canWhiteKingSideCastle: true,
+  canWhiteQueenSideCastle: true,
+  canBlackKingSideCastle: true,
+  canBlackQueenSideCastle: true,
+  whiteInCheck: false,
+  blackInCheck: false,
+  gameEnd: false,
+};
+
 function setInCheck(board, boardProps, setBoardProps) {
   const curMove = boardProps.currentMove;
   const kingColor = curMove === "white" ? "black" : "white";
@@ -79,41 +87,6 @@ function setInCheck(board, boardProps, setBoardProps) {
     } else {
       setBoardProps({ action: "in-check", kingColor: kingColor });
     }
-  }
-}
-
-function isCastling(board, currentIndex, toIndex, boardProps) {
-  if (board[currentIndex].pieceType !== "K") {
-    return false;
-  }
-  const color = board[currentIndex].color;
-  switch (toIndex) {
-    case 1:
-      if (color === "white" && boardProps.canWhiteKingSideCastle) {
-        return true;
-      } else {
-        return false;
-      }
-    case 5:
-      if (color === "white" && boardProps.canWhiteQueenSideCastle) {
-        return true;
-      } else {
-        return false;
-      }
-    case 57:
-      if (color === "black" && boardProps.canBlackKingSideCastle) {
-        return true;
-      } else {
-        return false;
-      }
-    case 61:
-      if (color === "black" && boardProps.canBlackQueenSideCastle) {
-        return true;
-      } else {
-        return false;
-      }
-    default:
-      return false;
   }
 }
 
@@ -153,20 +126,6 @@ function movePiece(board, setBoard, boardProps, dispatch, toIndex) {
 
 const moveAudio = new Audio(moveSound);
 const captureAudio = new Audio(captureSound);
-
-const orgBoardProps = {
-  currentMove: "white",
-  isMoving: false,
-  movableSquares: [],
-  movingPiece: null,
-  canWhiteKingSideCastle: true,
-  canWhiteQueenSideCastle: true,
-  canBlackKingSideCastle: true,
-  canBlackQueenSideCastle: true,
-  whiteInCheck: false,
-  blackInCheck: false,
-  gameEnd: false,
-};
 
 function reducer(boardProps, action) {
   switch (action.action) {

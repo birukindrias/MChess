@@ -296,3 +296,38 @@ export function getMoves(board, boardProps, index) {
   }
   return movableIndexes;
 }
+
+export function isCastling(board, currentIndex, toIndex, boardProps) {
+  if (board[currentIndex].pieceType !== "K") {
+    return false;
+  }
+  const color = board[currentIndex].color;
+  switch (toIndex) {
+    case 1:
+      if (color === "white" && boardProps.canWhiteKingSideCastle) {
+        return true;
+      } else {
+        return false;
+      }
+    case 5:
+      if (color === "white" && boardProps.canWhiteQueenSideCastle) {
+        return true;
+      } else {
+        return false;
+      }
+    case 57:
+      if (color === "black" && boardProps.canBlackKingSideCastle) {
+        return true;
+      } else {
+        return false;
+      }
+    case 61:
+      if (color === "black" && boardProps.canBlackQueenSideCastle) {
+        return true;
+      } else {
+        return false;
+      }
+    default:
+      return false;
+  }
+}
