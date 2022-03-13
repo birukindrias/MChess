@@ -244,6 +244,7 @@ export function getPawnMoves(board, index) {
       if (
         row === 2 &&
         !board[getIndex(row + 2, col)] &&
+        !board[getIndex(row + 1, col)] &&
         canMoveTo(board, index, getIndex(row + 2, col))
       ) {
         movableIndexes.push(getIndex(row + 2, col));
@@ -271,6 +272,7 @@ export function getPawnMoves(board, index) {
       if (
         row === 7 &&
         !board[getIndex(row - 2, col)] &&
+        !board[getIndex(row - 1, col)] &&
         canMoveTo(board, index, getIndex(row - 2, col))
       ) {
         movableIndexes.push(getIndex(row - 2, col));

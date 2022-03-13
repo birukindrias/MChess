@@ -11,7 +11,7 @@
 
 #root {
   display: grid;
-  grid-template-columns: 1fr 0.2fr;
+  grid-template-columns: 1fr 0.3fr;
   place-items: center;
   background-color: #161512;
   height: 100vh;

@@ -23,7 +23,6 @@ function Square(props) {
           showMoves={props.showMoves}
           piece={props.piece}
           index={props.index}
-          isMoving={props.isMoving}
         />
       ) : null}
     </div>

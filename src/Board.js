@@ -1,5 +1,4 @@
 import Square from "./Square";
-import GameInfo from "./GameInfo";
 import { useState } from "react";
 import {
   getSquareColor,
@@ -180,6 +179,7 @@ function movePiece(
     returnObj.isMoving = false;
     returnObj.currentMove =
       boardProps.currentMove === "white" ? "black" : "white";
+    // setTurn(returnObj.currentMove);
     if (returnObj[`${boardProps.currentMove}InCheck`]) {
       returnObj[`${boardProps.currentMove}InCheck`] = false;
     }
@@ -319,7 +319,7 @@ function undoMove(board, setBoard, boardProps, setBoardProps, editMoveAction) {
   moves.pop();
 }
 
-function Board() {
+function Board(props) {
   const [board, setBoard] = useState(orgBoard);
   const [moveAction, editMoveAction] = useState({
     movableSquares: [],
@@ -337,6 +337,12 @@ function Board() {
     blackInCheck: false,
     gameEnd: false,
   });
+
+  if (props.gameEnd) {
+    setBoardProps((bp) => {
+      return { ...bp, gameEnd: true };
+    });
+  }
 
   return (
     <>
@@ -369,6 +375,9 @@ function Board() {
                   moveAction.pieceIndex,
                   toIndex
                 );
+                props.setTurn(
+                  boardProps.currentMove === "white" ? "black" : "white"
+                );
               }}
               selected={moveAction.pieceIndex}
               inCheck={boardProps[`${piece.color}InCheck`]}
@@ -376,13 +385,6 @@ function Board() {
           );
         })}
       </div>
-      <GameInfo
-        white="jaminux"
-        black="kebede"
-        currentTurn={boardProps.currentMove}
-        timeFormat="15:00"
-        run={false}
-      />
       {/* <button */}
       {/*   onClick={() => { */}
       {/*     undoMove(board, setBoard, boardProps, setBoardProps, editMoveAction); */}
