@@ -93,6 +93,8 @@ export function inCheck(board, kingColor) {
   const kingIndex = board.findIndex((curPiece) => {
     if (curPiece.color === kingColor && curPiece.pieceType === "K") {
       return true;
+    } else {
+      return false;
     }
   });
   const diagonalMoves = getBishopMoves(board, kingIndex);

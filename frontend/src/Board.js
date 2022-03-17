@@ -1,5 +1,5 @@
 import Square from "./Square";
-import { useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import {
   getSquareColor,
   swap,
@@ -144,14 +144,13 @@ function reducer(boardProps, action) {
           movableSquares: [],
           movingPiece: null,
         };
-      } else {
-        return {
-          ...boardProps,
-          isMoving: true,
-          movableSquares: indexes,
-          movingPiece: action.index,
-        };
       }
+      return {
+        ...boardProps,
+        isMoving: true,
+        movableSquares: indexes,
+        movingPiece: action.index,
+      };
     case "end-game":
       return {
         ...boardProps,
@@ -185,6 +184,14 @@ function reducer(boardProps, action) {
 function Board(props) {
   const [board, setBoard] = useState(orgBoard);
   const [boardProps, dispatch] = useReducer(reducer, orgBoardProps);
+  const client_id = Date.now();
+  const ws = new WebSocket(`ws://localhost:8000/game/${client_id}`);
+
+  useEffect(() => {
+    ws.onmessage = function (event) {
+      console.log(event.data);
+    };
+  }, []);
 
   return (
     <>
