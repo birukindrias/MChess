@@ -11,14 +11,15 @@
 
 #root {
   display: grid;
-  grid-template-columns: 1fr 0.3fr;
+  grid-template-columns: 2fr 1fr;
   place-items: center;
   background-color: #161512;
   height: 100vh;
 }
 
 .board {
-  width: 560px;
+  width: 100%;
+  max-width: 560px;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(8, 1fr);
@@ -38,15 +39,15 @@
 }
 
 .square-dark {
-  background-image: url("../public/black-square.png");
+  background-image: url("../../../public/black-square.png");
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: 100% 100%;
 }
 
 .square-light {
-  background-image: url("../public/light-square.png");
+  background-image: url("../../../public/light-square.png");
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: 100% 100%;
 }
 
 .piece {

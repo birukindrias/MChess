@@ -3,27 +3,10 @@ import GameInfo from "./GameInfo";
 import { useReducer } from "react";
 import { getMoves, checkCastlingRights } from "./utils";
 
-const orgBoardProps = {
-  currentMove: "white",
-  isMoving: false,
-  movableSquares: [],
-  movingPiece: null,
-  canWhiteKingSideCastle: true,
-  canWhiteQueenSideCastle: true,
-  canBlackKingSideCastle: true,
-  canBlackQueenSideCastle: true,
-  whiteInCheck: false,
-  blackInCheck: false,
-  gameEnd: false,
-};
-
 function reducer(boardProps, action) {
   switch (action.action) {
     case "show-moves":
-      if (
-        action.board[action.index].color !== boardProps.currentMove ||
-        boardProps.gameEnd
-      ) {
+      if (action.board[action.index].color !== boardProps.currentMove) {
         return boardProps;
       }
       const indexes = getMoves(action.board, boardProps, action.index);
@@ -71,18 +54,37 @@ function reducer(boardProps, action) {
   }
 }
 
-export default function Game() {
-  const [boardProps, dispatch] = useReducer(reducer, orgBoardProps);
+export function getOrgBoardProps(running) {
+  return {
+    currentMove: "white",
+    isMoving: false,
+    movableSquares: [],
+    movingPiece: null,
+    canWhiteKingSideCastle: true,
+    canWhiteQueenSideCastle: true,
+    canBlackKingSideCastle: true,
+    canBlackQueenSideCastle: true,
+    whiteInCheck: false,
+    blackInCheck: false,
+    gameEnd: !running,
+  };
+}
+
+export default function Game(props) {
+  const [boardProps, dispatch] = useReducer(
+    reducer,
+    getOrgBoardProps(props.running)
+  );
 
   return (
     <>
       <Board boardProps={boardProps} dispatch={dispatch} />
       <GameInfo
-        white="jaminux"
-        black="kebede"
+        white="White"
+        black="Black"
         currentTurn={boardProps.currentMove}
         timeFormat="10:00"
-        run={true}
+        run={false}
       />
     </>
   );

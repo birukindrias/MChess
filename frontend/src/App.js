@@ -1,8 +1,12 @@
-import "./App.css";
-import Game from "./Game";
+import { Outlet } from "react-router-dom";
+import "./assets/css/App.css";
 
 function App() {
-  return <Game />;
+  return (
+    <>
+      <Outlet />
+    </>
+  );
 }
 
 export default App;

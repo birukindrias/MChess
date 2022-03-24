@@ -124,11 +124,13 @@ function Board(props) {
               key={i}
               index={i}
               showMoves={(index) => {
-                props.dispatch({
-                  action: "show-moves",
-                  index: index,
-                  board: board,
-                });
+                if (!props.boardProps.gameEnd) {
+                  props.dispatch({
+                    action: "show-moves",
+                    index: index,
+                    board: board,
+                  });
+                }
               }}
               movable={props.boardProps.movableSquares.includes(i)}
               isMoving={props.boardProps.isMoving}
