@@ -1,14 +1,12 @@
 import Square from "./Square";
-import { useEffect, useReducer, useState } from "react";
+import { useState } from "react";
 import {
   getSquareColor,
   swap,
   inCheck,
   checkCheckmated,
   checkPromotion,
-  checkCastlingRights,
   castledBoard,
-  getMoves,
   isCastling,
 } from "./utils";
 import moveSound from "./assets/sounds/Move.ogg";
@@ -51,20 +49,6 @@ const orgBoard = [
     { color: "black", pieceType: "H" },
     { color: "black", pieceType: "R" },
   ]);
-
-const orgBoardProps = {
-  currentMove: "white",
-  isMoving: false,
-  movableSquares: [],
-  movingPiece: null,
-  canWhiteKingSideCastle: true,
-  canWhiteQueenSideCastle: true,
-  canBlackKingSideCastle: true,
-  canBlackQueenSideCastle: true,
-  whiteInCheck: false,
-  blackInCheck: false,
-  gameEnd: false,
-};
 
 function setInCheck(board, boardProps, setBoardProps) {
   const curMove = boardProps.currentMove;
@@ -127,72 +111,8 @@ function movePiece(board, setBoard, boardProps, dispatch, toIndex) {
 const moveAudio = new Audio(moveSound);
 const captureAudio = new Audio(captureSound);
 
-function reducer(boardProps, action) {
-  switch (action.action) {
-    case "show-moves":
-      if (
-        action.board[action.index].color !== boardProps.currentMove ||
-        boardProps.gameEnd
-      ) {
-        return boardProps;
-      }
-      const indexes = getMoves(action.board, boardProps, action.index);
-      if (boardProps.movingPiece === action.index) {
-        return {
-          ...boardProps,
-          isMoving: false,
-          movableSquares: [],
-          movingPiece: null,
-        };
-      }
-      return {
-        ...boardProps,
-        isMoving: true,
-        movableSquares: indexes,
-        movingPiece: action.index,
-      };
-    case "end-game":
-      return {
-        ...boardProps,
-        gameEnd: true,
-      };
-    case "in-check":
-      let returnObj = { ...boardProps };
-      returnObj[`${action.kingColor}InCheck`] = true;
-      return returnObj;
-    case "moved-piece":
-      let finalObj = { ...boardProps };
-      finalObj.isMoving = false;
-      finalObj.currentMove =
-        boardProps.currentMove === "white" ? "black" : "white";
-      if (finalObj[`${boardProps.currentMove}InCheck`]) {
-        finalObj[`${boardProps.currentMove}InCheck`] = false;
-      }
-      finalObj.isMoving = false;
-      finalObj.movingPiece = null;
-      finalObj.movableSquares = [];
-      checkCastlingRights(
-        boardProps.movingPiece,
-        action.board[boardProps.movingPiece].pieceType,
-        boardProps,
-        finalObj
-      );
-      return finalObj;
-  }
-}
-
 function Board(props) {
   const [board, setBoard] = useState(orgBoard);
-  const [boardProps, dispatch] = useReducer(reducer, orgBoardProps);
-  const client_id = Date.now();
-  const ws = new WebSocket(`ws://localhost:8000/game/${client_id}`);
-
-  useEffect(() => {
-    ws.onmessage = function (event) {
-      console.log(event.data);
-    };
-  }, []);
-
   return (
     <>
       <div className="board">
@@ -204,18 +124,25 @@ function Board(props) {
               key={i}
               index={i}
               showMoves={(index) => {
-                dispatch({ action: "show-moves", index: index, board: board });
+                props.dispatch({
+                  action: "show-moves",
+                  index: index,
+                  board: board,
+                });
               }}
-              movable={boardProps.movableSquares.includes(i)}
-              isMoving={boardProps.isMoving}
+              movable={props.boardProps.movableSquares.includes(i)}
+              isMoving={props.boardProps.isMoving}
               movePiece={(toIndex) => {
-                movePiece(board, setBoard, boardProps, dispatch, toIndex);
-                props.setTurn(
-                  boardProps.currentMove === "white" ? "black" : "white"
+                movePiece(
+                  board,
+                  setBoard,
+                  props.boardProps,
+                  props.dispatch,
+                  toIndex
                 );
               }}
-              selected={boardProps.movingPiece}
-              inCheck={boardProps[`${piece.color}InCheck`]}
+              selected={props.boardProps.movingPiece}
+              inCheck={props.boardProps[`${piece.color}InCheck`]}
             />
           );
         })}

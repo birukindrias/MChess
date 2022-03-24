@@ -1,24 +1,8 @@
-import { useState } from "react";
 import "./App.css";
-import Board from "./Board";
-import GameInfo from "./GameInfo";
+import Game from "./Game";
 
 function App() {
-  const [curTurn, setCurTurn] = useState("white");
-  const [gameEnd, setGameEnd] = useState(false);
-  return (
-    <>
-      <Board setTurn={setCurTurn} gameEnd={gameEnd} />
-      <GameInfo
-        white="jaminux"
-        black="kebede"
-        currentTurn={curTurn}
-        timeFormat="10:00"
-        run={true}
-        gameEnd={setGameEnd}
-      />
-    </>
-  );
+  return <Game />;
 }
 
 export default App;

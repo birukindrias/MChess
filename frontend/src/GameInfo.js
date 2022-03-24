@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import useInterval from "./useInterval";
 
 function decrement(curTime) {
@@ -43,31 +43,16 @@ export default function GameInfo(props) {
     }
   }, [props.currentTurn]);
 
-  useInterval(
-    () => {
-      if (currentTurn === "white") {
-        if (changed) {
-          changed = false;
-          setTimeout(
-            () => setWhiteTime((whiteTime) => decrement(whiteTime)),
-            500
-          );
-        } else {
-          setWhiteTime((whiteTime) => decrement(whiteTime));
-        }
-      } else if (currentTurn === "black") {
-        if (changed) {
-          changed = false;
-          setTimeout(
-            () => setBlackTime((blackTime) => decrement(blackTime)),
-            500
-          );
-        }
-        setBlackTime((blackTime) => decrement(blackTime));
-      }
-    },
-    props.run ? 1000 : null
-  );
+  const memoizedCallback = useCallback(() => {
+    if (currentTurn === "white") {
+      setWhiteTime((whiteTime) => decrement(whiteTime));
+    } else if (currentTurn === "black") {
+      setBlackTime((blackTime) => decrement(blackTime));
+    }
+    if (changed) changed = !changed;
+  }, [currentTurn]);
+
+  useInterval(memoizedCallback, props.run ? (changed ? 1300 : 1000) : null);
 
   return (
     <div className="game-info">
