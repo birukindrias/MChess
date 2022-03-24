@@ -6,13 +6,15 @@ import Game from "./Game";
 import Home from "./Home";
 
 ReactDOM.render(
-  <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<App />}>
-        <Route index element={<Home />} />
-        <Route path="game" element={<Game running={true} />} />
-      </Route>
-    </Routes>
-  </BrowserRouter>,
+  <React.StrictMode>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<App />}>
+          <Route index element={<Home />} />
+          <Route path="game" element={<Game running={true} />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  </React.StrictMode>,
   document.getElementById("root")
 );

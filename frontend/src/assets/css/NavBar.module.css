@@ -1,0 +1,27 @@
+.navbar {
+  padding: 1em 3em;
+  display: flex;
+  justify-content: space-between;
+}
+
+.navbar a {
+  color: #fff;
+}
+
+.navbar a:hover {
+  color: #57aeff;
+}
+
+.right_nav {
+  display: flex;
+  align-items: center;
+  gap: 2em;
+}
+
+.right_nav img {
+  width: 20px;
+}
+
+.right_nav img:hover {
+  cursor: pointer;
+}

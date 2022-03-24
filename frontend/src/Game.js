@@ -77,7 +77,7 @@ export default function Game(props) {
   );
 
   return (
-    <>
+    <div className="container">
       <Board boardProps={boardProps} dispatch={dispatch} />
       <GameInfo
         white="White"
@@ -86,6 +86,6 @@ export default function Game(props) {
         timeFormat="10:00"
         run={false}
       />
-    </>
+    </div>
   );
 }
