@@ -10,11 +10,11 @@ export default function HomeNav() {
       <h1 className={styles.header}>Play Chess</h1>
       <img src={ChessLogo} alt="Chess Logo" />
       <div className={styles.links}>
-        <Link to="/">
+        <Link to="/tfChoose?type=online">
           <img src={BlitzIcon} alt="" />
           <h3>Play a Friend Online</h3>
         </Link>
-        <Link to="/game">
+        <Link to="/tfChoose?type=offline">
           <img src={HomeIcon} alt="" />
           <h3>Play Offline</h3>
         </Link>

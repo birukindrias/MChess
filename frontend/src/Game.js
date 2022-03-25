@@ -2,6 +2,7 @@ import Board from "./Board";
 import GameInfo from "./GameInfo";
 import { useReducer } from "react";
 import { getMoves, checkCastlingRights } from "./utils";
+import { useSearchParams } from "react-router-dom";
 
 function reducer(boardProps, action) {
   switch (action.action) {
@@ -76,6 +77,8 @@ export default function Game(props) {
     getOrgBoardProps(props.running)
   );
 
+  const [searchParams, _] = useSearchParams();
+
   return (
     <div className="container">
       <Board boardProps={boardProps} dispatch={dispatch} />
@@ -83,8 +86,8 @@ export default function Game(props) {
         white="White"
         black="Black"
         currentTurn={boardProps.currentMove}
-        timeFormat="10:00"
-        run={false}
+        timeFormat={searchParams.get("tf")}
+        run={true}
       />
     </div>
   );

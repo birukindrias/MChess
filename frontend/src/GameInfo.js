@@ -30,11 +30,20 @@ function convertToString(minute, second) {
   return textMinute + ":" + textSecond;
 }
 
+function correctTimeFormat(timeFormat) {
+  let [time, increment] = timeFormat.split("|");
+  return `${time}:00`;
+}
+
 let changed = false;
 export default function GameInfo(props) {
   const [currentTurn, setTurn] = useState(props.currentTurn);
-  const [whiteTime, setWhiteTime] = useState(props.timeFormat);
-  const [blackTime, setBlackTime] = useState(props.timeFormat);
+  const [whiteTime, setWhiteTime] = useState(
+    correctTimeFormat(props.timeFormat)
+  );
+  const [blackTime, setBlackTime] = useState(
+    correctTimeFormat(props.timeFormat)
+  );
 
   useEffect(() => {
     if (currentTurn !== props.currentTurn) {
