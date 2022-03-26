@@ -5,9 +5,10 @@ export default function useInterval(callback, delay) {
     function tick() {
       callback();
     }
-    if (delay !== null) {
-      let id = setInterval(tick, delay);
-      return () => clearInterval(id);
+    let id = setInterval(tick, delay);
+    if (delay === null) {
+      clearInterval(id);
     }
+    return () => clearInterval(id);
   }, [delay, callback]);
 }

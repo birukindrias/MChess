@@ -76,8 +76,7 @@ export default function Game(props) {
     reducer,
     getOrgBoardProps(props.running)
   );
-
-  const [searchParams, _] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   return (
     <div className="container">
@@ -87,7 +86,7 @@ export default function Game(props) {
         black="Black"
         currentTurn={boardProps.currentMove}
         timeFormat={searchParams.get("tf")}
-        run={true}
+        run={!boardProps.gameEnd}
       />
     </div>
   );

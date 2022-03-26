@@ -4,15 +4,23 @@ import Board from "./Board";
 import styles from "./assets/css/TfChooser.module.css";
 import { Link, useSearchParams } from "react-router-dom";
 
+function getLink(timeFormat, type) {
+  if (type === "offline") {
+    return `/game?tf=${timeFormat}`;
+  } else {
+    return "/";
+  }
+}
+
 export default function ChooseTimeFormat() {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 995);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [sp, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     window.addEventListener("resize", () =>
       setIsMobile(window.innerWidth <= 995)
     );
-  });
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -20,15 +28,15 @@ export default function ChooseTimeFormat() {
       <div className={styles.right_box}>
         <h2>Choose the time format</h2>
         <div className={styles.time_format}>
-          <Link to={`/game?tf=3|0`}>3 | 0</Link>
-          <Link to="/game?tf=3|2">3 | 2</Link>
-          <Link to="/game?tf=5|0">5 | 0</Link>
-          <Link to="/game?tf=10|0">10 | 0</Link>
-          <Link to="/game?tf=10|5">10 | 5</Link>
-          <Link to="/game?tf=15|0">15 | 0</Link>
-          <Link to="/game?tf=15|10">15 | 10</Link>
-          <Link to="/game?tf=30|0">30 | 0</Link>
-          <Link to="/game?tf=30|20">30 | 20</Link>
+          <Link to={getLink("3|0", sp.get("type"))}>3 | 0</Link>
+          <Link to={getLink("3|2", sp.get("type"))}>3 | 2</Link>
+          <Link to={getLink("5|0", sp.get("type"))}>5 | 0</Link>
+          <Link to={getLink("10|0", sp.get("type"))}>10 | 0</Link>
+          <Link to={getLink("10|5", sp.get("type"))}>10 | 5</Link>
+          <Link to={getLink("15|0", sp.get("type"))}>15 | 0</Link>
+          <Link to={getLink("15|10", sp.get("type"))}>15 | 10</Link>
+          <Link to={getLink("30|0", sp.get("type"))}>30 | 0</Link>
+          <Link to={getLink("30|20", sp.get("type"))}>30 | 20</Link>
         </div>
       </div>
     </div>
