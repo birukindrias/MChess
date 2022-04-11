@@ -86,6 +86,10 @@ function checkCanAttackKing(board, index, kingIndex) {
         return true;
       }
       break;
+    default:
+      throw Error(
+        `Piecetype at index ${index} is ${board[index].pieceType}. This piecetype doesn't exist`
+      );
   }
 }
 
@@ -163,6 +167,10 @@ export function checkCheckmated(board, kingColor) {
         moves = getRookMoves(board, curIndex);
         moves.concat(getBishopMoves(board, curIndex));
         break;
+      default:
+        throw Error(
+          `Piecetype at ${curIndex} is ${piece.pieceType}. This piecetype doesn't exist`
+        );
     }
     for (let toIndex of moves) {
       if (!checkModifiedBoardInCheck(board, kingColor, curIndex, toIndex)) {
@@ -283,6 +291,11 @@ export function getMoves(board, boardProps, index) {
     case "Q":
       movableIndexes = movableIndexes.concat(getRookMoves(board, index));
       movableIndexes = movableIndexes.concat(getBishopMoves(board, index));
+      break;
+    default:
+      throw Error(
+        `PieceType at ${index} is ${pieceType}. This pieceType doesn't exist.`
+      );
   }
   // don't allow moves that don't block the check
   if (boardProps[`${boardProps.currentMove}InCheck`] || pieceType === "K") {

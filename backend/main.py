@@ -3,8 +3,6 @@ from typing import List
 from fastapi import FastAPI, WebSocket
 from starlette.websockets import WebSocketDisconnect
 
-app = FastAPI()
-
 
 class ConnectionManager:
     def __init__(self):
