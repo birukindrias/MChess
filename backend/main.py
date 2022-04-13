@@ -1,39 +1,39 @@
-from typing import List
+from fastapi import FastAPI, status
+from fastapi.exceptions import HTTPException
+from fastapi.param_functions import Depends
+from sqlalchemy.orm import Session
 
-from fastapi import FastAPI, WebSocket
-from starlette.websockets import WebSocketDisconnect
+from . import crud, models, schemas
+from .db import SessionLocal, engine
 
+models.Base.metadata.create_all(bind=engine)
 
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: List[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-    async def send_move(self, move: str, websocket: WebSocket):
-        await websocket.send_text(move)
-
-    async def broadcast(self, move: str):
-        for connection in self.active_connections:
-            await connection.send_text(move)
+app = FastAPI()
 
 
-manager = ConnectionManager()
-
-
-@app.websocket("/game/{game_id}")
-async def game_endpoint(websocket: WebSocket, game_id: int):
-    await manager.connect(websocket)
+def get_db():
+    db = SessionLocal()
     try:
-        while True:
-            data = await websocket.receive_text()
-            await manager.send_move(data, websocket)
-            await manager.broadcast(f"Client id #{game_id} says: {data}")
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
-        await manager.broadcast(f"Client #{game_id} left the game")
+        yield db
+    finally:
+        db.close()
+
+
+@app.post("/users/", response_model=schemas.User)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_email(db, email=user.email)
+    if db_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Email already registered",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    db_user = crud.get_user_by_username(db, user.username)
+    if db_user:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Username already in use",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return crud.create_user(db, user=user)
