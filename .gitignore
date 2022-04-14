@@ -24,4 +24,5 @@ yarn-debug.log*
 yarn-error.log*
 
 Session.vim
+test_db.db
 __pycache__

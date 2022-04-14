@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
 import Game from "./Game";
 import Home from "./Home";
+import Register from "./Register";
 import ChooseTimeFormat from "./ChooseTimeFormat";
 
 ReactDOM.render(
@@ -14,6 +15,7 @@ ReactDOM.render(
           <Route index element={<Home />} />
           <Route path="game" element={<Game running={true} />} />
           <Route path="tfChoose" element={<ChooseTimeFormat />} />
+          <Route path="register" element={<Register />} />
         </Route>
       </Routes>
     </BrowserRouter>
