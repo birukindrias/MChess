@@ -4,12 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.param_functions import Depends
 from sqlalchemy.orm import Session
 
-from . import crud, models, schemas
-from .db import SessionLocal, engine
+from . import app, crud, models, schemas
+from .auth import oauth2_scheme
+from .db import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
 
 origins = ["http://localhost:3000"]
 
@@ -20,14 +20,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.post("/api/users/", response_model=schemas.User)
@@ -48,8 +40,3 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         )
 
     return crud.create_user(db, user=user)
-
-
-@app.get("/api/test")
-def test():
-    return {"identity": "loser"}

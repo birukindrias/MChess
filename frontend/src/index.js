@@ -5,6 +5,7 @@ import App from "./App";
 import Game from "./Game";
 import Home from "./Home";
 import Register from "./Register";
+import Login from "./Login";
 import ChooseTimeFormat from "./ChooseTimeFormat";
 
 ReactDOM.render(
@@ -16,6 +17,7 @@ ReactDOM.render(
           <Route path="game" element={<Game running={true} />} />
           <Route path="tfChoose" element={<ChooseTimeFormat />} />
           <Route path="register" element={<Register />} />
+          <Route path="login" element={<Login />} />
         </Route>
       </Routes>
     </BrowserRouter>
