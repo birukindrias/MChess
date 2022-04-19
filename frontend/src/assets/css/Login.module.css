@@ -9,7 +9,6 @@
 
 .container h1 {
   color: #fff;
-  margin-bottom: 1em;
 }
 
 .container input {
@@ -30,4 +29,22 @@
 .container input[type="submit"]:hover {
   cursor: pointer;
   background-color: #4ba9f1;
+}
+
+.errorContainer {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 1em;
+}
+
+.errorContainer p {
+  color: #fa314a;
+  font-size: 1.3rem;
+}
+
+@media (max-width: 393px) {
+  .errorContainer img {
+    display: none;
+  }
 }

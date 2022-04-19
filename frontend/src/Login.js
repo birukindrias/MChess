@@ -1,9 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./assets/css/Login.module.css";
+import ErrorImage from "./assets/images/error.png";
+import useAuth from "./useAuth";
 
 export default function Login() {
   const [userName, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
+  const { setToken } = useAuth();
 
   async function handleSumbit(e) {
     e.preventDefault();
@@ -15,12 +21,24 @@ export default function Login() {
       body: data,
     });
     const responseJson = await response.json();
-    console.log(responseJson);
+    if (!response.ok) {
+      setErrorMsg(responseJson.detail);
+    } else {
+      setErrorMsg("");
+      localStorage.setItem("chessUserToken", responseJson.access_token);
+      setToken(responseJson.access_token);
+      navigate("/");
+    }
   }
 
   return (
     <form className={styles.container} onSubmit={handleSumbit}>
       <h1>Login</h1>
+      {errorMsg ? (
+        <div className={styles.errorContainer}>
+          <img src={ErrorImage} alt="" /> <p>{errorMsg}</p>
+        </div>
+      ) : null}
       <input
         type="text"
         name="username"

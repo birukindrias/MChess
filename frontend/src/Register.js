@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./assets/css/Register.module.css";
 import ErrorImage from "./assets/images/error.png";
 
@@ -9,6 +10,7 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [errorState, setErrorState] = useState("");
+  let navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -35,7 +37,7 @@ export default function Register() {
         body: JSON.stringify(user),
       });
       if (response.ok) {
-        window.location.replace("/");
+        navigate("/");
       } else {
         const errorMsg = await response.json();
         setErrorState(errorMsg.detail);
