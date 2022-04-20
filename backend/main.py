@@ -1,11 +1,10 @@
-from fastapi import FastAPI, status
+from fastapi import status
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.param_functions import Depends
 from sqlalchemy.orm import Session
 
-from . import app, crud, models, schemas
-from .auth import oauth2_scheme
+from . import app, auth, crud, models, schemas
 from .db import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)

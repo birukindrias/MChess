@@ -1,21 +1,23 @@
-from uuid import uuid4
+from fastapi import Depends
+from sqlalchemy.orm import Session
 
-from fastapi.param_functions import Depends
-from pydantic import BaseModel
+from backend import schemas
 
-from . import app
-from .auth import oauth2_scheme
-
-
-class Game(BaseModel):
-    time: int
-    increment: int
+from . import app, crud, models
+from .auth import authenticate_access_token, oauth2_scheme
+from .db import get_db
+from .schemas import Game
 
 
-@app.post("/create_game/")
-async def create_game(game: Game, token: str = Depends(oauth2_scheme)):
-    game_id = str(uuid4()).split("-")[0]
-    return game_id
+@app.post("/api/create_game/")
+async def create_game(
+    game: Game,
+    user: models.User = Depends(authenticate_access_token),
+    db: Session = Depends(get_db),
+):
+    user_scheme = schemas.User.from_orm(user)
+    created_game = crud.create_game(db, user_scheme, game)
+    return created_game
 
 
 @app.get("/learn")

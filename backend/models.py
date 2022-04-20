@@ -13,6 +13,8 @@ class Game(Base):
     in_progress = Column(Boolean)
     game_position = Column(String)
     game_pgn = Column(String)
+    time = Column(Integer)
+    increment = Column(Integer)
 
 
 class User(Base):

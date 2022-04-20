@@ -1,4 +1,3 @@
-from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from . import models, schemas
@@ -33,3 +32,11 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(user)
     return user
+
+
+def create_game(db: Session, user: schemas.User, game: schemas.Game):
+    game = models.Game(white_player=user.id, time=game.time, increment=game.increment)
+    db.add(game)
+    db.commit()
+    db.refresh(game)
+    return game
