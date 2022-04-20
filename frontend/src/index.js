@@ -10,6 +10,7 @@ import Logout from "./Logout";
 import ChooseTimeFormat from "./ChooseTimeFormat";
 import { UserProvider } from "./UserContext";
 import ProfilePage from "./ProfilePage";
+import CreateOnlineGame from "./CreateOnlineGame";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -24,6 +25,7 @@ ReactDOM.render(
             <Route path="login" element={<Login />} />
             <Route path="logout" element={<Logout />} />
             <Route path="profile" element={<ProfilePage />} />
+            <Route path="online" element={<CreateOnlineGame />} />
           </Route>
         </Routes>
       </UserProvider>

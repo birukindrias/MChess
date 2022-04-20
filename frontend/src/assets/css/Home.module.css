@@ -1,28 +1,8 @@
-.container {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  place-items: center;
-  height: 90%;
-}
-
-.right_nav {
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  padding: 6em 3em;
-  background-color: #211e13;
-  border-radius: 8px;
-  gap: 2em;
-  height: 85%;
-}
-
 .header {
   font-size: 2rem;
 }
 
-.right_nav img {
+.titleImg {
   width: 50px;
 }
 

@@ -1,0 +1,23 @@
+.titleImg {
+  width: 50px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+}
+
+.container a {
+  display: flex;
+  align-items: center;
+  gap: 1.5em;
+  color: #fff;
+  background-color: #302607;
+  padding: 1em;
+  border-radius: 5px;
+}
+
+.container a:hover {
+  background-color: #161512;
+}
