@@ -9,6 +9,7 @@ import Login from "./Login";
 import Logout from "./Logout";
 import ChooseTimeFormat from "./ChooseTimeFormat";
 import { UserProvider } from "./UserContext";
+import ProfilePage from "./ProfilePage";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -22,6 +23,7 @@ ReactDOM.render(
             <Route path="register" element={<Register />} />
             <Route path="login" element={<Login />} />
             <Route path="logout" element={<Logout />} />
+            <Route path="profile" element={<ProfilePage />} />
           </Route>
         </Routes>
       </UserProvider>

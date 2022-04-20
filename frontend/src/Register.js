@@ -48,11 +48,11 @@ export default function Register() {
   return (
     <form className={styles.container} onSubmit={handleSubmit}>
       <h1>Register</h1>
-      {errorState ? (
+      {errorState && (
         <div className={styles.errorContainer}>
           <img src={ErrorImage} alt="" /> <p>{errorState}</p>
         </div>
-      ) : null}
+      )}
       <input
         type="text"
         placeholder="First Name"

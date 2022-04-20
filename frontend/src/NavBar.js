@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import styles from "./assets/css/NavBar.module.css";
 import SearchIcon from "./assets/images/search.png";
+import DropDown from "./DropDown";
 import useAuth from "./useAuth";
 
 function objIsEmpty(obj) {
@@ -13,17 +14,15 @@ export default function NavBar() {
   return (
     <nav className={styles.navbar}>
       <Link to="/">
-        <h1>MChess</h1>
+        <h1 className={styles.appName}>MChess</h1>
       </Link>
       <div className={styles.right_nav}>
         <img src={SearchIcon} alt="Search" />
         {!objIsEmpty(user) ? (
-          <Link to="/profile">
-            <h3>{user.username}</h3>
-          </Link>
+          <DropDown title={user.username}></DropDown>
         ) : (
-          <Link to="/login">
-            <h3>Login</h3>
+          <Link className={styles.login} to="/login">
+            <p>Login</p>
           </Link>
         )}
       </div>

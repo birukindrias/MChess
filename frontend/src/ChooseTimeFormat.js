@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { getOrgBoardProps } from "./Game";
 import Board from "./Board";
 import styles from "./assets/css/TfChooser.module.css";
@@ -23,10 +23,17 @@ export default function ChooseTimeFormat() {
   const [sp, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  const checkSize = useCallback(
+    () => setIsMobile(window.innerWidth <= 995),
+    []
+  );
+
   useEffect(() => {
-    window.addEventListener("resize", () =>
-      setIsMobile(window.innerWidth <= 995)
-    );
+    window.addEventListener("resize", checkSize);
+
+    return () => {
+      window.removeEventListener("resize", checkSize);
+    };
   }, []);
 
   return (

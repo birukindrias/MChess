@@ -1,14 +1,26 @@
 .navbar {
-  padding: 1em 3em;
+  padding: 1em 2em;
   display: flex;
   justify-content: space-between;
 }
 
-.navbar a {
+.login {
+  color: #57aeff;
+  box-sizing: unset;
+  padding: 10px 14px;
+}
+
+.login:hover {
+  background-color: #211e13;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.225);
+  border-radius: 4px;
+}
+
+.appName {
   color: #fff;
 }
 
-.navbar a:hover {
+.appName:hover {
   color: #57aeff;
 }
 

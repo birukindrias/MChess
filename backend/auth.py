@@ -20,7 +20,7 @@ config = dotenv_values("backend/.env")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
 
-def authenticate_user(db: Session, username, password):
+async def authenticate_user(db: Session, username, password):
     user = crud.get_user_by_username(db, username)
     if not user:
         return False
@@ -30,7 +30,7 @@ def authenticate_user(db: Session, username, password):
     return user
 
 
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+async def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
@@ -44,28 +44,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-@app.post("/api/token")
-def token(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
-):
-    user = authenticate_user(db, form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
-    weeks = str(config["ACCESS_TOKEN_EXPIRE_WEEKS"])
-    access_token_expires = timedelta(int(weeks))
-    access_token = create_access_token(
-        data={"sub": str(user.id)}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
-
-
-@app.get("/api/me", response_model=User)
-def get_current_user(
+async def authenticate_access_token(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ):
     try:
@@ -75,6 +54,32 @@ def get_current_user(
         user = db.query(models.User).get(decoded["sub"])
     except Exception:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Email or Password"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Credentials"
         )
+
+    return user
+
+
+@app.post("/api/token")
+async def token(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+):
+    user = await authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    weeks = str(config["ACCESS_TOKEN_EXPIRE_WEEKS"])
+    access_token_expires = timedelta(int(weeks))
+    access_token = await create_access_token(
+        data={"sub": str(user.id)}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.get("/api/me", response_model=User)
+async def get_current_user(user=Depends(authenticate_access_token)):
     return User.from_orm(user)

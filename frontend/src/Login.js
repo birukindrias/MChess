@@ -34,11 +34,11 @@ export default function Login() {
   return (
     <form className={styles.container} onSubmit={handleSumbit}>
       <h1>Login</h1>
-      {errorMsg ? (
+      {errorMsg && (
         <div className={styles.errorContainer}>
           <img src={ErrorImage} alt="" /> <p>{errorMsg}</p>
         </div>
-      ) : null}
+      )}
       <input
         type="text"
         name="username"
