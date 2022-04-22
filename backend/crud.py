@@ -1,26 +1,29 @@
+from random import randint
+
 from sqlalchemy.orm import Session
 
 from . import models, schemas
+from .game import org_board_props
 from .hashing import hash_password, verify_password
 
 
-def get_user(db: Session, user_id: int):
+async def get_user(db: Session, user_id: int):
     return db.query(models.User).filter_by(id=user_id).first()
 
 
-def get_user_by_email(db: Session, email: str):
+async def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter_by(email=email).first()
 
 
-def get_user_by_username(db: Session, username: str):
+async def get_user_by_username(db: Session, username: str):
     return db.query(models.User).filter_by(username=username).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
+async def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 
-def create_user(db: Session, user: schemas.UserCreate):
+async def create_user(db: Session, user: schemas.UserCreate):
     user = models.User(
         username=user.username,
         first_name=user.first_name,
@@ -34,9 +37,40 @@ def create_user(db: Session, user: schemas.UserCreate):
     return user
 
 
-def create_game(db: Session, user: schemas.User, game: schemas.Game):
-    game = models.Game(white_player=user.id, time=game.time, increment=game.increment)
+async def create_game(db: Session, user: schemas.User, game: schemas.GameCreate):
+    is_white = randint(1, 1000000) % 2 == 0
+    if is_white:
+        game = models.LiveGame(
+            white_player=user.username,
+            time=game.time,
+            increment=game.increment,
+            white_time=game.time,
+            black_time=game.time,
+            board_props=org_board_props,
+            game_end=False,
+            game_moves={},
+        )
+    else:
+        game = models.LiveGame(
+            black_player=user.username,
+            time=game.time,
+            increment=game.increment,
+            white_time=game.time,
+            black_time=game.time,
+            board_props=org_board_props,
+            game_end=False,
+            game_moves={},
+        )
+
     db.add(game)
     db.commit()
     db.refresh(game)
     return game
+
+
+async def get_game(db: Session, game_id: int):
+    return db.query(models.Game).filter_by(id=game_id).first()
+
+
+async def get_live_game(db: Session, game_id: int):
+    return db.query(models.LiveGame).filter_by(id=game_id).first()

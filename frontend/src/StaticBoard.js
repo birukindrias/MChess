@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect } from "react";
 import styles from "./assets/css/StaticBoard.module.css";
 import { getOrgBoardProps } from "./Game";
 import Board from "./Board";
@@ -6,12 +6,10 @@ import Board from "./Board";
 export default function StaticBoard({ children }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 995);
 
-  const checkSize = useCallback(
-    () => setIsMobile(window.innerWidth <= 995),
-    []
-  );
-
   useEffect(() => {
+    function checkSize() {
+      setIsMobile(window.innerWidth <= 995);
+    }
     window.addEventListener("resize", checkSize);
 
     return () => {

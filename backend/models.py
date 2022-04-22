@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+from sqlalchemy import JSON, Boolean, Column, ForeignKey, Integer, String
 
 from .db import Base
 
@@ -7,14 +7,29 @@ class Game(Base):
     __tablename__ = "games"
 
     id = Column(Integer, primary_key=True)
-    annoymous = Column(Boolean)
     white_player = Column(Integer, ForeignKey("users.id"))
     black_player = Column(Integer, ForeignKey("users.id"))
-    in_progress = Column(Boolean)
-    game_position = Column(String)
-    game_pgn = Column(String)
+    game_moves = Column(JSON)
     time = Column(Integer)
     increment = Column(Integer)
+
+
+class LiveGame(Base):
+    __tablename__ = "livegame"
+
+    id = Column(Integer, primary_key=True)
+    white_player = Column(String, ForeignKey("users.username"))
+    black_player = Column(String, ForeignKey("users.username"))
+    white_time = Column(String)
+    black_time = Column(String)
+    board_props = Column(JSON)
+    time = Column(Integer)
+    increment = Column(Integer)
+    game_end = Column(Boolean)
+    game_moves = Column(JSON)
+
+    def __repr__(self) -> str:
+        return f"LiveGame(id={self.id}, white_player={self.white_player}, black_player={self.black_player}, board_props={self.board_props}, time={self.time}, increment={self.increment})"
 
 
 class User(Base):

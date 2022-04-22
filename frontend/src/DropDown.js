@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./assets/css/DropDown.module.css";
 import { ReactComponent as ProfileIcon } from "./assets/images/profile.svg";
 import { ReactComponent as LogoutIcon } from "./assets/images/logout.svg";
@@ -39,13 +39,12 @@ function checkIsInDropdown(element) {
 export default function DropDown({ title }) {
   const [showDropdown, setShow] = useState(false);
 
-  const toggleDropDown = useCallback((e) => {
-    if (!checkIsInDropdown(e.target)) {
-      setShow(false);
-    }
-  }, []);
-
   useEffect(() => {
+    function toggleDropDown(e) {
+      if (!checkIsInDropdown(e.target)) {
+        setShow(false);
+      }
+    }
     window.addEventListener("click", toggleDropDown);
 
     return () => window.removeEventListener("click", toggleDropDown);

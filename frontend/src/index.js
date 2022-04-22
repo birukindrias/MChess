@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
@@ -11,6 +11,7 @@ import ChooseTimeFormat from "./ChooseTimeFormat";
 import { UserProvider } from "./UserContext";
 import ProfilePage from "./ProfilePage";
 import CreateOnlineGame from "./CreateOnlineGame";
+import OnlineGame from "./OnlineGame";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -19,7 +20,8 @@ ReactDOM.render(
         <Routes>
           <Route path="/" element={<App />}>
             <Route index element={<Home />} />
-            <Route path="game" element={<Game running={true} />} />
+            <Route path="game/offline" element={<Game running={true} />} />
+            <Route path="game/:gameId" element={<OnlineGame />} />
             <Route path="tfChoose" element={<ChooseTimeFormat />} />
             <Route path="register" element={<Register />} />
             <Route path="login" element={<Login />} />

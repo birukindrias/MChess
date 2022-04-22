@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import BoxContainer from "./BoxContainer";
 import StaticBoard from "./StaticBoard";
 import CreateGameButton from "./CreateGameButton";
+import { useState } from "react";
 
 const timeFormats = [
   "3|0",
@@ -27,7 +28,7 @@ export default function ChooseTimeFormat() {
         <div className={styles.time_format}>
           {sp.get("type") === "offline"
             ? timeFormats.map((timeFormat, index) => (
-                <Link key={index} to={`/game?tf=${timeFormat}`}>
+                <Link key={index} to={`/game/offline?tf=${timeFormat}`}>
                   {timeFormat.split("|").join(" + ")}
                 </Link>
               ))

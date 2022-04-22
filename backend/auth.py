@@ -21,7 +21,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
 
 async def authenticate_user(db: Session, username, password):
-    user = crud.get_user_by_username(db, username)
+    user = await crud.get_user_by_username(db, username)
     if not user:
         return False
     if not verify_password(password, user.password_hash):

@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.param_functions import Depends
 from sqlalchemy.orm import Session
 
-from . import app, auth, crud, models, schemas
+from . import app, auth, crud, game_routes, models, schemas
 from .db import engine, get_db
 
 models.Base.metadata.create_all(bind=engine)
@@ -23,14 +23,14 @@ app.add_middleware(
 
 @app.post("/api/users/", response_model=schemas.User)
 async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = crud.get_user_by_email(db, email=user.email)
+    db_user = await crud.get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Email already registered",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    db_user = crud.get_user_by_username(db, user.username)
+    db_user = await crud.get_user_by_username(db, user.username)
     if db_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -38,4 +38,4 @@ async def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    return crud.create_user(db, user=user)
+    return await crud.create_user(db, user=user)

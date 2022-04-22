@@ -29,7 +29,6 @@ export default function Register() {
       };
       const response = await fetch("/api/users", {
         method: "POST",
-        mode: "cors",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",

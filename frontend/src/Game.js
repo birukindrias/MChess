@@ -4,7 +4,7 @@ import { useReducer } from "react";
 import { getMoves, checkCastlingRights } from "./utils";
 import { useSearchParams } from "react-router-dom";
 
-function reducer(boardProps, action) {
+export function reducer(boardProps, action) {
   switch (action.action) {
     case "show-moves":
       if (action.board[action.index].color !== boardProps.currentMove) {
@@ -76,7 +76,7 @@ export default function Game(props) {
     reducer,
     getOrgBoardProps(props.running)
   );
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   return (
     <div className="container">
