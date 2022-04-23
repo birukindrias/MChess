@@ -60,11 +60,6 @@ export default function GameInfo(props) {
   const [moveIncrement] = useState(getTime(props.timeFormat, "increment"));
 
   useEffect(() => {
-    console.log(props.timeFormat);
-    console.log(getTime(props.timeFormat, "time"));
-  }, []);
-
-  useEffect(() => {
     if (currentTurn !== props.currentTurn) {
       setTurn(props.currentTurn);
       changed = true;

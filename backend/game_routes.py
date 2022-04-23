@@ -40,7 +40,7 @@ async def get_game(game_id: int, db: Session = Depends(get_db)):
 
 @app.websocket("/api/game/{game_id}")
 async def run_game(game_id: int, websocket: WebSocket, db: Session = Depends(get_db)):
-    manager.set_game_id(game_id)
+    manager.set_game_id(game_id, db)
     await websocket.accept()
     verified = False
     while not verified:
@@ -48,8 +48,7 @@ async def run_game(game_id: int, websocket: WebSocket, db: Session = Depends(get
         user = await authenticate_access_token(data, db)
         if user:
             verified = True
-            await manager.add_player(user, db, websocket)
-            await manager.connect(websocket, db)
+            await manager.connect(user, websocket, db)
             break
         else:
             websocket.send_text("Invalid credentials")
@@ -58,7 +57,8 @@ async def run_game(game_id: int, websocket: WebSocket, db: Session = Depends(get
         try:
             while True:
                 data = await websocket.receive_json()
-                await manager.send_move(data, websocket, db)
+                await manager.handle_command(data, websocket)
+                # await manager.send_move(data, websocket, db)
         except WebSocketDisconnect:
             manager.disconnect(websocket)
 

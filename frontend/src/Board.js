@@ -50,7 +50,7 @@ const orgBoard = [
     { color: "black", pieceType: "R" },
   ]);
 
-function setInCheck(board, boardProps, setBoardProps) {
+export function setInCheck(board, boardProps, setBoardProps) {
   const curMove = boardProps.currentMove;
   const kingColor = curMove === "white" ? "black" : "white";
   const kingIndex = board.findIndex((curPiece) => {
@@ -74,8 +74,14 @@ function setInCheck(board, boardProps, setBoardProps) {
   }
 }
 
-function movePiece(board, setBoard, boardProps, dispatch, toIndex) {
-  const currentPieceIndex = boardProps.movingPiece;
+export function movePiece(
+  board,
+  setBoard,
+  boardProps,
+  dispatch,
+  currentPieceIndex,
+  toIndex
+) {
   if (isCastling(board, currentPieceIndex, toIndex, boardProps)) {
     moveAudio.play();
     setBoard(castledBoard(board, currentPieceIndex, toIndex));
@@ -140,6 +146,7 @@ function Board(props) {
                   setBoard,
                   props.boardProps,
                   props.dispatch,
+                  props.boardProps.movingPiece,
                   toIndex
                 );
               }}

@@ -52,6 +52,11 @@ export function reducer(boardProps, action) {
         finalObj
       );
       return finalObj;
+    case "update-moving-piece":
+      return {
+        ...boardProps,
+        movingPiece: action.index,
+      };
   }
 }
 

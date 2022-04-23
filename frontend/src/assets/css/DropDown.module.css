@@ -26,7 +26,7 @@
   background-color: #3c3934;
   left: -2.5rem;
   top: calc(100% + 0.2rem);
-  width: 200%;
+  width: 100px;
   display: flex;
   flex-direction: column;
   gap: 1em;
