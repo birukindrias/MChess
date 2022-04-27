@@ -81,7 +81,6 @@ export default function OnlineGame() {
           : null;
 
       if (!isWatcher && boardProps.currentMove === player_color) {
-        sendMove(boardProps.movingPiece, toIndex, ws);
         movePiece(
           board,
           setBoard,
@@ -90,6 +89,7 @@ export default function OnlineGame() {
           boardProps.movingPiece,
           toIndex
         );
+        sendMove(boardProps.movingPiece, toIndex, ws);
       }
     },
     [ws, boardProps]

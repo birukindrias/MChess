@@ -26,8 +26,8 @@ async def get_users(db: Session, skip: int = 0, limit: int = 100):
 async def create_user(db: Session, user: schemas.UserCreate):
     user = models.User(
         username=user.username,
-        first_name=user.first_name,
-        last_name=user.last_name,
+        first_name=user.first_name.capitalize(),
+        last_name=user.last_name.capitalize(),
         email=user.email,
         password_hash=hash_password(user.password),
     )

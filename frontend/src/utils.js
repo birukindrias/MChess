@@ -43,8 +43,8 @@ export function canMoveTo(board, pieceIndex, index) {
   return false;
 }
 
-export function swap(array, index1, index2) {
-  let swappedArray = [...array];
+export function swap(board, index1, index2) {
+  let swappedArray = [...board];
   const tmp = swappedArray[index2];
   swappedArray[index2] = swappedArray[index1];
   swappedArray[index1] = tmp;

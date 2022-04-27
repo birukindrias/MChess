@@ -128,3 +128,7 @@ class GameManager:
     def disconnect(self, websocket: WebSocket):
         if websocket in self.game_watchers:
             self.game_watchers.remove(websocket)
+        else:
+            for player in self.game_members.copy():
+                if player["websocket"] == websocket:
+                    self.game_members.remove(player)

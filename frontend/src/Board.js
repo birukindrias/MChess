@@ -74,44 +74,41 @@ export function setInCheck(board, boardProps, setBoardProps) {
   }
 }
 
-export function movePiece(
-  board,
-  setBoard,
-  boardProps,
-  dispatch,
-  currentPieceIndex,
-  toIndex
-) {
-  if (isCastling(board, currentPieceIndex, toIndex, boardProps)) {
+export function movePiece(board, boardProps, dispatch, fromIndex, toIndex) {
+  let finalBoard;
+  if (isCastling(board, fromIndex, toIndex, boardProps)) {
     moveAudio.play();
-    setBoard(castledBoard(board, currentPieceIndex, toIndex));
+    finalBoard = castledBoard(board, fromIndex, toIndex);
+    dispatch({ action: "moved-piece", board: finalBoard });
+    return finalBoard;
   } else if (board[toIndex] === "") {
     moveAudio.play();
-    setBoard((board) => {
-      if (checkPromotion(board, currentPieceIndex, toIndex)) {
-        board[currentPieceIndex] = {
-          color: board[currentPieceIndex].color,
-          pieceType: "Q",
-        };
-      }
-      return swap(board, currentPieceIndex, toIndex);
-    });
-    setInCheck(swap(board, currentPieceIndex, toIndex), boardProps, dispatch);
+    let tmp = [...board];
+    if (checkPromotion(board, fromIndex, toIndex)) {
+      tmp[fromIndex] = {
+        color: board[fromIndex].color,
+        pieceType: "Q",
+      };
+    }
+    finalBoard = swap(board, fromIndex, toIndex);
+    setInCheck(finalBoard, boardProps, dispatch);
+    dispatch({ action: "moved-piece", board: finalBoard });
+    return finalBoard;
   } else {
     let finalBoard = [...board];
-    if (checkPromotion(board, currentPieceIndex, toIndex)) {
-      finalBoard[currentPieceIndex] = {
-        color: finalBoard[currentPieceIndex].color,
+    if (checkPromotion(board, fromIndex, toIndex)) {
+      finalBoard[fromIndex] = {
+        color: finalBoard[fromIndex].color,
         pieceType: "Q",
       };
     }
     finalBoard[toIndex] = "";
-    finalBoard = swap(finalBoard, toIndex, currentPieceIndex);
-    setBoard(finalBoard);
+    finalBoard = swap(finalBoard, toIndex, fromIndex);
     captureAudio.play();
     setInCheck(finalBoard, boardProps, dispatch);
+    dispatch({ action: "moved-piece", board: board });
+    return finalBoard;
   }
-  dispatch({ action: "moved-piece", board: board });
 }
 
 const moveAudio = new Audio(moveSound);
@@ -120,43 +117,42 @@ const captureAudio = new Audio(captureSound);
 function Board(props) {
   const [board, setBoard] = useState(orgBoard);
   return (
-    <>
-      <div className="board">
-        {board.map((piece, i) => {
-          return (
-            <Square
-              piece={piece}
-              squareColor={getSquareColor(i)}
-              key={i}
-              index={i}
-              showMoves={(index) => {
-                if (!props.boardProps.gameEnd) {
-                  props.dispatch({
-                    action: "show-moves",
-                    index: index,
-                    board: board,
-                  });
-                }
-              }}
-              movable={props.boardProps.movableSquares.includes(i)}
-              isMoving={props.boardProps.isMoving}
-              movePiece={(toIndex) => {
-                movePiece(
+    <div className="board">
+      {board.map((piece, i) => {
+        return (
+          <Square
+            piece={piece}
+            squareColor={getSquareColor(i)}
+            key={i}
+            index={i}
+            showMoves={(index) => {
+              if (!props.boardProps.gameEnd) {
+                props.dispatch({
+                  action: "show-moves",
+                  index: index,
+                  board: board,
+                });
+              }
+            }}
+            movable={props.boardProps.movableSquares.includes(i)}
+            isMoving={props.boardProps.isMoving}
+            movePiece={(toIndex) => {
+              setBoard((board) => {
+                return movePiece(
                   board,
-                  setBoard,
                   props.boardProps,
                   props.dispatch,
                   props.boardProps.movingPiece,
                   toIndex
                 );
-              }}
-              selected={props.boardProps.movingPiece}
-              inCheck={props.boardProps[`${piece.color}InCheck`]}
-            />
-          );
-        })}
-      </div>
-    </>
+              });
+            }}
+            selected={props.boardProps.movingPiece}
+            inCheck={props.boardProps[`${piece.color}InCheck`]}
+          />
+        );
+      })}
+    </div>
   );
 }
 
