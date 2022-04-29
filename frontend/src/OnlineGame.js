@@ -81,15 +81,16 @@ export default function OnlineGame() {
           : null;
 
       if (!isWatcher && boardProps.currentMove === player_color) {
-        movePiece(
-          board,
-          setBoard,
-          boardProps,
-          dispatch,
-          boardProps.movingPiece,
-          toIndex
-        );
         sendMove(boardProps.movingPiece, toIndex, ws);
+        setBoard((board) => {
+          return movePiece(
+            board,
+            boardProps,
+            dispatch,
+            boardProps.movingPiece,
+            toIndex
+          );
+        });
       }
     },
     [ws, boardProps]
@@ -125,21 +126,24 @@ export default function OnlineGame() {
             });
             setIsWaiting(false);
           } else if (data.action === "make-move") {
+            console.log(`From Index is: ${data.fromIndex}`);
             dispatch({ action: "update-moving-piece", index: data.fromIndex });
-            movePiece(
-              board,
-              setBoard,
-              boardProps,
-              dispatch,
-              data.fromIndex,
-              data.toIndex
-            );
+            setBoard((board) => {
+              return movePiece(
+                board,
+                boardProps,
+                dispatch,
+                data.fromIndex,
+                data.toIndex
+              );
+            });
           }
           break;
         case "error":
           console.log(data.detail);
       }
     };
+    return () => ws.close();
   }, []);
 
   return (

@@ -13,8 +13,6 @@ from .auth import authenticate_access_token, oauth2_scheme
 from .db import get_db
 from .game import GameManager
 
-manager = GameManager()
-
 
 @app.post("/api/create_game/")
 async def create_game(
@@ -36,6 +34,9 @@ async def get_game(game_id: int, db: Session = Depends(get_db)):
             detail="Requested game does not exist",
         )
     return game
+
+
+manager = GameManager()
 
 
 @app.websocket("/api/game/{game_id}")
