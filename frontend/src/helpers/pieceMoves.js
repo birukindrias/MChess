@@ -141,7 +141,7 @@ function canCastle(board, index, castleType) {
     }
     return true;
   } else if (castleType === "queenside") {
-    if (board[getIndex(row, col + 1)] || board[getIndex(row, col + 2)]) {
+    if (board[getIndex(row, col + 1)] || board[getIndex(row, col + 2)] || board[getIndex(row, col + 3)]) {
       return false;
     }
     for (let i = 1; i <= 2; i++) {
