@@ -17,7 +17,7 @@ from .schemas import User
 
 config = dotenv_values("backend/.env")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token/")
 
 
 async def authenticate_user(db: Session, username, password):
@@ -60,7 +60,7 @@ async def authenticate_access_token(
     return user
 
 
-@app.post("/api/token")
+@app.post("/api/token/")
 async def token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
@@ -80,6 +80,6 @@ async def token(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/api/me", response_model=User)
+@app.get("/api/me/", response_model=User)
 async def get_current_user(user=Depends(authenticate_access_token)):
     return User.from_orm(user)

@@ -101,17 +101,17 @@ function reducer(boardProps, action) {
         finalObj
       );
       finalObj.isMoving = false;
-      console.log("Move was currrently: " + finalObj.currentMove);
       finalObj.currentMove =
         boardProps.currentMove === "white" ? "black" : "white";
-      console.log("Now move changed to: " + finalObj.currentMove);
       if (finalObj[`${boardProps.currentMove}InCheck`]) {
         finalObj[`${boardProps.currentMove}InCheck`] = false;
       }
       finalObj.isMoving = false;
       finalObj.movingPiece = null;
       finalObj.movableSquares = [];
-      console.log("Final Object is: " + JSON.stringify(finalObj));
+      console.log("BoardProps was: ")
+      console.log(boardProps);
+      console.log(finalObj);
       return finalObj;
     case "update-moving-piece":
       return {
@@ -130,8 +130,8 @@ export default function OnlineGame() {
   const [isWaiting, setIsWaiting] = useState(true);
   const { user, token } = useAuth();
   const [isWatcher, setIsWatcher] = useState(false);
-  const [ws, setWs] = useState(
-    new WebSocket(`ws://127.0.0.1:8000/api/game/${gameId}`)
+  const [ws] = useState(
+    new WebSocket(`ws://192.168.8.109:8000/api/game/${gameId}/`)
   );
 
   const makeMove = useCallback(
@@ -189,7 +189,6 @@ export default function OnlineGame() {
             });
             setIsWaiting(false);
           } else if (data.action === "make-move") {
-            dispatch({ action: "update-moving-piece", index: data.fromIndex });
             setBoard((board) => {
               return movePiece(
                 board,

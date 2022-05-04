@@ -14,7 +14,7 @@ export default function CreateGameButton({ timeFormat }) {
       time: parseInt(tf[0]),
       increment: parseInt(tf[1]),
     };
-    const response = await fetch("/api/create_game", {
+    const response = await fetch("/api/create_game/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

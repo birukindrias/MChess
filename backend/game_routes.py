@@ -36,11 +36,10 @@ async def get_game(game_id: int, db: Session = Depends(get_db)):
     return game
 
 
-manager = GameManager()
 managers: Dict[int, GameManager] = dict()
 
 
-@app.websocket("/api/game/{game_id}")
+@app.websocket("/api/game/{game_id}/")
 async def run_game(game_id: int, websocket: WebSocket, db: Session = Depends(get_db)):
     if not managers.get(game_id):
         manager = GameManager()
@@ -70,6 +69,6 @@ async def run_game(game_id: int, websocket: WebSocket, db: Session = Depends(get
             manager.disconnect(websocket)
 
 
-@app.get("/test")
+@app.get("/test/")
 async def test():
     return {"hello": "mike"}

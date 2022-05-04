@@ -16,7 +16,7 @@ export default function Login() {
     const data = new FormData();
     data.append("username", userName);
     data.append("password", password);
-    const response = await fetch("/api/token", {
+    const response = await fetch("/api/token/", {
       method: "POST",
       body: data,
     });

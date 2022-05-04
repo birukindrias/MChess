@@ -10,7 +10,8 @@ from .db import engine, get_db
 models.Base.metadata.create_all(bind=engine)
 
 
-origins = ["http://localhost:3000"]
+origins = ["http://localhost:3000", "http://192.168.8.107:3000"]
+# origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,

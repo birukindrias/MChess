@@ -7,7 +7,7 @@ export function UserProvider(props) {
   const [user, setUser] = useState({});
 
   useEffect(() => {
-    fetch("/api/me", {
+    fetch("/api/me/", {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
