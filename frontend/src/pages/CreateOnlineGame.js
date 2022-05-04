@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import BoxContainer from "./BoxContainer";
-import StaticBoard from "./StaticBoard";
-import styles from "./assets/css/CreateOnlineGame.module.css";
-import InviteLinkIcon from "./assets/images/link.png";
-import NewGameIcon from "./assets/images/new-game.png";
-import ChessLogo from "./assets/images/logo-chess.png";
-import useAuth from "./useAuth";
+import BoxContainer from "../components/BoxContainer";
+import StaticBoard from "../components/StaticBoard";
+import styles from "../assets/css/CreateOnlineGame.module.css";
+import InviteLinkIcon from "../assets/images/link.png";
+import NewGameIcon from "../assets/images/new-game.png";
+import ChessLogo from "../assets/images/logo-chess.png";
+import useAuth from "../hooks/useAuth";
 
 export default function CreateOnlineGame() {
   const { user } = useAuth();

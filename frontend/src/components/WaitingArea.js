@@ -1,7 +1,7 @@
 import BoxContainer from "./BoxContainer";
-import InviteLogo from "./assets/images/link.png";
-import FireIcon from "./assets/images/new-game.png";
-import styles from "./assets/css/WaitingArea.module.css";
+import InviteLogo from "../assets/images/link.png";
+import FireIcon from "../assets/images/new-game.png";
+import styles from "../assets/css/WaitingArea.module.css";
 
 function handleOnClick(e) {
   const text = e.target.value;

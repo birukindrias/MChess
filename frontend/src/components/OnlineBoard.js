@@ -1,5 +1,5 @@
-import Square from "./Square";
-import { getSquareColor } from "./utils";
+import Square from "../components/Square";
+import { getSquareColor } from "../helpers/utils";
 
 function OnlineBoard({ board, boardProps, dispatch, player_color, makeMove }) {
   return (

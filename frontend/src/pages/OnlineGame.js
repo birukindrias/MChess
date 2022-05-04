@@ -1,50 +1,11 @@
 import { useEffect, useState, useReducer, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { getOrgBoardProps } from "./Game";
-import GameInfo from "./GameInfo";
-import WaitingArea from "./WaitingArea";
-import useAuth from "./useAuth";
-import OnlineBoard from "./OnlineBoard";
-import { movePiece } from "./Board";
-import { getMoves, checkCastlingRights } from "./utils";
-
-const orgBoard = [
-  { color: "white", pieceType: "R" },
-  { color: "white", pieceType: "H" },
-  { color: "white", pieceType: "B" },
-  { color: "white", pieceType: "K" },
-  { color: "white", pieceType: "Q" },
-  { color: "white", pieceType: "B" },
-  { color: "white", pieceType: "H" },
-  { color: "white", pieceType: "R" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-]
-  .concat(Array(32).fill(""))
-  .concat([
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "R" },
-    { color: "black", pieceType: "H" },
-    { color: "black", pieceType: "B" },
-    { color: "black", pieceType: "K" },
-    { color: "black", pieceType: "Q" },
-    { color: "black", pieceType: "B" },
-    { color: "black", pieceType: "H" },
-    { color: "black", pieceType: "R" },
-  ]);
+import GameInfo from "../components/GameInfo";
+import WaitingArea from "../components/WaitingArea";
+import useAuth from "../hooks/useAuth";
+import OnlineBoard from "../components/OnlineBoard";
+import { movePiece } from "../components/Board";
+import { getMoves, checkCastlingRights, orgBoard, getOrgBoardProps } from "../helpers/utils";
 
 function getTimeFormat(gameInfo) {
   const time = gameInfo.time;

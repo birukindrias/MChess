@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./assets/css/Login.module.css";
-import ErrorImage from "./assets/images/error.png";
-import useAuth from "./useAuth";
+import styles from "../assets/css/Login.module.css";
+import ErrorImage from "../assets/images/error.png";
+import useAuth from "../hooks/useAuth";
 
 export default function Login() {
   const [userName, setUsername] = useState("");

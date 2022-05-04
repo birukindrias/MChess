@@ -1,4 +1,4 @@
-import Square from "./Square";
+import Square from "../components/Square";
 import { useState } from "react";
 import {
   getSquareColor,
@@ -8,47 +8,10 @@ import {
   checkPromotion,
   castledBoard,
   isCastling,
-} from "./utils";
-import moveSound from "./assets/sounds/Move.ogg";
-import captureSound from "./assets/sounds/Capture.ogg";
-
-const orgBoard = [
-  { color: "white", pieceType: "R" },
-  { color: "white", pieceType: "H" },
-  { color: "white", pieceType: "B" },
-  { color: "white", pieceType: "K" },
-  { color: "white", pieceType: "Q" },
-  { color: "white", pieceType: "B" },
-  { color: "white", pieceType: "H" },
-  { color: "white", pieceType: "R" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-  { color: "white", pieceType: "p" },
-]
-  .concat(Array(32).fill(""))
-  .concat([
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "p" },
-    { color: "black", pieceType: "R" },
-    { color: "black", pieceType: "H" },
-    { color: "black", pieceType: "B" },
-    { color: "black", pieceType: "K" },
-    { color: "black", pieceType: "Q" },
-    { color: "black", pieceType: "B" },
-    { color: "black", pieceType: "H" },
-    { color: "black", pieceType: "R" },
-  ]);
+  orgBoard
+} from "../helpers/utils";
+import moveSound from "../assets/sounds/Move.ogg";
+import captureSound from "../assets/sounds/Capture.ogg";
 
 export function setInCheck(board, boardProps, setBoardProps) {
   const curMove = boardProps.currentMove;
@@ -118,46 +81,6 @@ export function movePiece(board, boardProps, dispatch, fromIndex, toIndex) {
     return finalBoard;
   }
 }
-
-// export function movePiece(
-//   board,
-//   setBoard,
-//   boardProps,
-//   dispatch,
-//   currentPieceIndex,
-//   toIndex
-// ) {
-//   if (isCastling(board, currentPieceIndex, toIndex, boardProps)) {
-//     moveAudio.play();
-//     setBoard(castledBoard(board, currentPieceIndex, toIndex));
-//   } else if (board[toIndex] === "") {
-//     moveAudio.play();
-//     setBoard((board) => {
-//       if (checkPromotion(board, currentPieceIndex, toIndex)) {
-//         board[currentPieceIndex] = {
-//           color: board[currentPieceIndex].color,
-//           pieceType: "Q",
-//         };
-//       }
-//       return swap(board, currentPieceIndex, toIndex);
-//     });
-//     setInCheck(swap(board, currentPieceIndex, toIndex), boardProps, dispatch);
-//   } else {
-//     let finalBoard = [...board];
-//     if (checkPromotion(board, currentPieceIndex, toIndex)) {
-//       finalBoard[currentPieceIndex] = {
-//         color: finalBoard[currentPieceIndex].color,
-//         pieceType: "Q",
-//       };
-//     }
-//     finalBoard[toIndex] = "";
-//     finalBoard = swap(finalBoard, toIndex, currentPieceIndex);
-//     setBoard(finalBoard);
-//     captureAudio.play();
-//     setInCheck(finalBoard, boardProps, dispatch);
-//   }
-//   dispatch({ action: "moved-piece", board: board });
-// }
 
 const moveAudio = new Audio(moveSound);
 const captureAudio = new Audio(captureSound);

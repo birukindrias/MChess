@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import styles from "./assets/css/DropDown.module.css";
-import { ReactComponent as ProfileIcon } from "./assets/images/profile.svg";
-import { ReactComponent as LogoutIcon } from "./assets/images/logout.svg";
+import styles from "../assets/css/DropDown.module.css";
+import { ReactComponent as ProfileIcon } from "../assets/images/profile.svg";
+import { ReactComponent as LogoutIcon } from "../assets/images/logout.svg";
 import { Link } from "react-router-dom";
 
 function DropDownLink({ to, children, setShow }) {

@@ -346,3 +346,57 @@ export function isCastling(board, currentIndex, toIndex, boardProps) {
       return false;
   }
 }
+
+export function getOrgBoardProps(running) {
+  return {
+    currentMove: "white",
+    isMoving: false,
+    movableSquares: [],
+    movingPiece: null,
+    canWhiteKingSideCastle: true,
+    canWhiteQueenSideCastle: true,
+    canBlackKingSideCastle: true,
+    canBlackQueenSideCastle: true,
+    whiteInCheck: false,
+    blackInCheck: false,
+    gameEnd: !running,
+  };
+}
+
+export const orgBoard = [
+  { color: "white", pieceType: "R" },
+  { color: "white", pieceType: "H" },
+  { color: "white", pieceType: "B" },
+  { color: "white", pieceType: "K" },
+  { color: "white", pieceType: "Q" },
+  { color: "white", pieceType: "B" },
+  { color: "white", pieceType: "H" },
+  { color: "white", pieceType: "R" },
+  { color: "white", pieceType: "p" },
+  { color: "white", pieceType: "p" },
+  { color: "white", pieceType: "p" },
+  { color: "white", pieceType: "p" },
+  { color: "white", pieceType: "p" },
+  { color: "white", pieceType: "p" },
+  { color: "white", pieceType: "p" },
+  { color: "white", pieceType: "p" },
+]
+  .concat(Array(32).fill(""))
+  .concat([
+    { color: "black", pieceType: "p" },
+    { color: "black", pieceType: "p" },
+    { color: "black", pieceType: "p" },
+    { color: "black", pieceType: "p" },
+    { color: "black", pieceType: "p" },
+    { color: "black", pieceType: "p" },
+    { color: "black", pieceType: "p" },
+    { color: "black", pieceType: "p" },
+    { color: "black", pieceType: "R" },
+    { color: "black", pieceType: "H" },
+    { color: "black", pieceType: "B" },
+    { color: "black", pieceType: "K" },
+    { color: "black", pieceType: "Q" },
+    { color: "black", pieceType: "B" },
+    { color: "black", pieceType: "H" },
+    { color: "black", pieceType: "R" },
+  ]);

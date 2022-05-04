@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import styles from "./assets/css/StaticBoard.module.css";
-import { getOrgBoardProps } from "./Game";
-import Board from "./Board";
+import styles from "../assets/css/StaticBoard.module.css";
+import { getOrgBoardProps } from "../helpers/utils";
+import Board from "../components/Board";
 
 export default function StaticBoard({ children }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 995);

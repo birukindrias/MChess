@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import styles from "./assets/css/NavBar.module.css";
-import SearchIcon from "./assets/images/search.png";
-import DropDown from "./DropDown";
-import useAuth from "./useAuth";
+import styles from "../assets/css/NavBar.module.css";
+import SearchIcon from "../assets/images/search.png";
+import DropDown from "../components/DropDown";
+import useAuth from "../hooks/useAuth";
 
 function objIsEmpty(obj) {
   return Object.keys(obj).length === 0;

@@ -1,5 +1,5 @@
-import HomeNav from "./HomeNav";
-import StaticBoard from "./StaticBoard";
+import HomeNav from "../components/HomeNav";
+import StaticBoard from "../components/StaticBoard";
 
 export default function Home() {
   return (

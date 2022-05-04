@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./assets/css/Register.module.css";
-import ErrorImage from "./assets/images/error.png";
+import styles from "../assets/css/Register.module.css";
+import ErrorImage from "../assets/images/error.png";
 
 export default function Register() {
   const [firstName, setFirstName] = useState("");

@@ -1,7 +1,7 @@
-import Board from "./Board";
-import GameInfo from "./GameInfo";
+import Board from "../components/Board";
+import GameInfo from "../components/GameInfo";
 import { useReducer } from "react";
-import { getMoves, checkCastlingRights } from "./utils";
+import { getMoves, checkCastlingRights, getOrgBoardProps } from "../helpers/utils";
 import { useSearchParams } from "react-router-dom";
 
 export function reducer(boardProps, action) {
@@ -56,22 +56,6 @@ export function reducer(boardProps, action) {
       finalObj.movableSquares = [];
       return finalObj;
   }
-}
-
-export function getOrgBoardProps(running) {
-  return {
-    currentMove: "white",
-    isMoving: false,
-    movableSquares: [],
-    movingPiece: null,
-    canWhiteKingSideCastle: true,
-    canWhiteQueenSideCastle: true,
-    canBlackKingSideCastle: true,
-    canBlackQueenSideCastle: true,
-    whiteInCheck: false,
-    blackInCheck: false,
-    gameEnd: !running,
-  };
 }
 
 export default function Game(props) {

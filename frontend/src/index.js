@@ -1,17 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import App from "./App";
-import Game from "./Game";
-import Home from "./Home";
-import Register from "./Register";
-import Login from "./Login";
-import Logout from "./Logout";
-import ChooseTimeFormat from "./ChooseTimeFormat";
-import { UserProvider } from "./UserContext";
-import ProfilePage from "./ProfilePage";
-import CreateOnlineGame from "./CreateOnlineGame";
-import OnlineGame from "./OnlineGame";
+import App from "./pages/App";
+import Game from "./pages/Game";
+import Home from "./pages/Home";
+import Register from "./pages/Register";
+import Login from "./pages/Login";
+import Logout from "./pages/Logout";
+import ChooseTimeFormat from "./pages/ChooseTimeFormat";
+import { UserProvider } from "./hooks/UserContext";
+import ProfilePage from "./pages/ProfilePage";
+import CreateOnlineGame from "./pages/CreateOnlineGame";
+import OnlineGame from "./pages/OnlineGame";
 
 ReactDOM.render(
   <React.StrictMode>

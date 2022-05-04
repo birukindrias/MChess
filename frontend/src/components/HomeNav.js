@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import styles from "./assets/css/Home.module.css";
-import ChessLogo from "./assets/images/logo-chess.png";
-import BlitzIcon from "./assets/images/blitz.png";
-import HomeIcon from "./assets/images/home.png";
-import BoxContainer from "./BoxContainer";
+import styles from "../assets/css/Home.module.css";
+import ChessLogo from "../assets/images/logo-chess.png";
+import BlitzIcon from "../assets/images/blitz.png";
+import HomeIcon from "../assets/images/home.png";
+import BoxContainer from "../components/BoxContainer";
 
 export default function HomeNav() {
   return (

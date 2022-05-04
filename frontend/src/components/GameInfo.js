@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import useInterval from "./useInterval";
+import useInterval from "../hooks/useInterval";
 
 function decrement(curTime) {
   let [m, s] = curTime.split(":");

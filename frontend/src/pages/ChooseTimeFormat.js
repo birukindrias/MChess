@@ -1,9 +1,8 @@
-import styles from "./assets/css/TfChooser.module.css";
+import styles from "../assets/css/TfChooser.module.css";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import BoxContainer from "./BoxContainer";
-import StaticBoard from "./StaticBoard";
-import CreateGameButton from "./CreateGameButton";
-import { useState } from "react";
+import BoxContainer from "../components/BoxContainer";
+import StaticBoard from "../components/StaticBoard";
+import CreateGameButton from "../components/CreateGameButton";
 
 const timeFormats = [
   "3|0",
