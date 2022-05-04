@@ -67,42 +67,44 @@ class GameManager:
         )
 
     async def connect(self, user: models.User, websocket: WebSocket, db: Session):
-        if not self.game_started:
-            if len(self.game_members) == 0:
-                if self.game.white_player and user.username == self.game.white_player:
-                    await self.add_player(user.username, "white", websocket, db)
-                elif self.game.black_player and user.username == self.game.black_player:
-                    await self.add_player(user.username, "black", websocket, db)
-                else:
-                    await self.send_error(
-                        websocket,
-                        "You have to wait for the person who created the game to join",
-                    )
-            elif len(self.game_members) == 1:
-                first_player = self.game_members[0]
-                if first_player["user"] != user.username:
-                    if self.game.white_player == first_player["user"]:
-                        await self.add_player(user.username, "black", websocket, db)
-                    else:
-                        await self.add_player(user.username, "white", websocket, db)
-                    for player in self.game_members:
-                        await self.send_command(
-                            player["websocket"], "start-game", self.game
-                        )
-                    self.game_started = True
-                else:
-                    await self.send_error(websocket, "You have already joined the game")
+        if self.game_started and len(self.game_members) == 2:
+            self.game_watchers.append(websocket)
+
+        elif self.game_started and len(self.game_members) < 2:
+            if user.username == self.game.white_player:
+                await self.add_player(user.username, "white", websocket, db)
+            elif user.username == self.game.black_player:
+                await self.add_player(user.username, "black", websocket, db)
             else:
                 self.game_watchers.append(websocket)
-                await self.send_command(websocket, "start-watching", self.game)
+
+        elif len(self.game_members) < 1:
+            if user.username == self.game.white_player:
+                await self.add_player(user.username, "white", websocket, db)
+            elif user.username == self.game.black_player:
+                await self.add_player(user.username, "black", websocket, db)
+            else:
+                await self.send_error(
+                    websocket,
+                    "You have to wait for the person who created the game to join",
+                )
+
         else:
-            found = False
+            if (
+                self.game_members[0]["user"] != user.username
+                and not self.game.black_player
+            ):
+                await self.add_player(user.username, "black", websocket, db)
+            elif (
+                self.game_members[0]["user"] != user.username
+                and not self.game.white_player
+            ):
+                await self.add_player(user.username, "white", websocket, db)
+            else:
+                await self.send_error(websocket, "You have already joined the game")
             for player in self.game_members:
-                if player["user"] == user.username:
-                    await self.send_command(websocket, "start-game", self.game)
-                    found = True
-            if not found:
-                self.game_watchers.append(websocket)
+                await self.send_command(player["websocket"], "start-game", self.game)
+            self.game_started = True
 
     async def make_move(self, fromIndex, toIndex, websocket: WebSocket):
         for player in self.game_members:

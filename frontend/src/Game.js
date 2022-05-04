@@ -36,9 +36,12 @@ export function reducer(boardProps, action) {
       return returnObj;
     case "moved-piece":
       let finalObj = { ...boardProps };
+      let movingPiece = action.movingPiece
+        ? action.movingPiece
+        : boardProps.movingPiece;
       checkCastlingRights(
-        boardProps.movingPiece,
-        action.board[finalObj.movingPiece].pieceType,
+        movingPiece,
+        action.board[movingPiece].pieceType,
         boardProps,
         finalObj
       );
@@ -52,11 +55,6 @@ export function reducer(boardProps, action) {
       finalObj.movingPiece = null;
       finalObj.movableSquares = [];
       return finalObj;
-    case "update-moving-piece":
-      return {
-        ...boardProps,
-        movingPiece: action.index,
-      };
   }
 }
 

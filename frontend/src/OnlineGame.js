@@ -1,11 +1,12 @@
 import { useEffect, useState, useReducer, useCallback } from "react";
 import { useParams } from "react-router-dom";
-import { getOrgBoardProps, reducer } from "./Game";
+import { getOrgBoardProps } from "./Game";
 import GameInfo from "./GameInfo";
 import WaitingArea from "./WaitingArea";
 import useAuth from "./useAuth";
 import OnlineBoard from "./OnlineBoard";
 import { movePiece } from "./Board";
+import { getMoves, checkCastlingRights } from "./utils";
 
 const orgBoard = [
   { color: "white", pieceType: "R" },
@@ -56,6 +57,68 @@ function sendMove(fromIndex, toIndex, ws) {
   ws.send(
     JSON.stringify({ type: "command", action: "make-move", fromIndex, toIndex })
   );
+}
+
+function reducer(boardProps, action) {
+  switch (action.action) {
+    case "show-moves":
+      if (action.board[action.index].color !== boardProps.currentMove) {
+        return boardProps;
+      }
+      const indexes = getMoves(action.board, boardProps, action.index);
+      if (boardProps.movingPiece === action.index) {
+        return {
+          ...boardProps,
+          isMoving: false,
+          movableSquares: [],
+          movingPiece: null,
+        };
+      }
+      return {
+        ...boardProps,
+        isMoving: true,
+        movableSquares: indexes,
+        movingPiece: action.index,
+      };
+    case "end-game":
+      return {
+        ...boardProps,
+        gameEnd: true,
+      };
+    case "in-check":
+      let returnObj = { ...boardProps };
+      returnObj[`${action.kingColor}InCheck`] = true;
+      return returnObj;
+    case "moved-piece":
+      let finalObj = { ...boardProps };
+      let movingPiece = action.movingPiece
+        ? action.movingPiece
+        : boardProps.movingPiece;
+      checkCastlingRights(
+        movingPiece,
+        action.board[movingPiece].pieceType,
+        boardProps,
+        finalObj
+      );
+      finalObj.isMoving = false;
+      console.log("Move was currrently: " + finalObj.currentMove);
+      finalObj.currentMove =
+        boardProps.currentMove === "white" ? "black" : "white";
+      console.log("Now move changed to: " + finalObj.currentMove);
+      if (finalObj[`${boardProps.currentMove}InCheck`]) {
+        finalObj[`${boardProps.currentMove}InCheck`] = false;
+      }
+      finalObj.isMoving = false;
+      finalObj.movingPiece = null;
+      finalObj.movableSquares = [];
+      console.log("Final Object is: " + JSON.stringify(finalObj));
+      return finalObj;
+    case "update-moving-piece":
+      return {
+        ...boardProps,
+        movingPiece: action.index,
+      };
+  }
 }
 
 export default function OnlineGame() {
@@ -126,7 +189,6 @@ export default function OnlineGame() {
             });
             setIsWaiting(false);
           } else if (data.action === "make-move") {
-            console.log(`From Index is: ${data.fromIndex}`);
             dispatch({ action: "update-moving-piece", index: data.fromIndex });
             setBoard((board) => {
               return movePiece(
@@ -140,7 +202,6 @@ export default function OnlineGame() {
           }
           break;
         case "error":
-          console.log(data.detail);
       }
     };
     return () => ws.close();

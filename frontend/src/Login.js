@@ -45,6 +45,7 @@ export default function Login() {
         value={userName}
         onChange={(e) => setUsername(e.target.value)}
         placeholder="Username"
+        autoFocus
       />
       <input
         type="password"

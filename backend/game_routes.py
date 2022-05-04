@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 from fastapi import Depends, WebSocket
 from fastapi.exceptions import HTTPException
@@ -37,10 +37,17 @@ async def get_game(game_id: int, db: Session = Depends(get_db)):
 
 
 manager = GameManager()
+managers: Dict[int, GameManager] = dict()
 
 
 @app.websocket("/api/game/{game_id}")
 async def run_game(game_id: int, websocket: WebSocket, db: Session = Depends(get_db)):
+    if not managers.get(game_id):
+        manager = GameManager()
+        managers[game_id] = manager
+    else:
+        manager = managers[game_id]
+
     manager.set_game_id(game_id, db)
     await websocket.accept()
     verified = False
@@ -52,14 +59,13 @@ async def run_game(game_id: int, websocket: WebSocket, db: Session = Depends(get
             await manager.connect(user, websocket, db)
             break
         else:
-            websocket.send_text("Invalid credentials")
+            await websocket.send_text("Invalid credentials")
 
     if verified:
         try:
             while True:
                 data = await websocket.receive_json()
                 await manager.handle_command(data, websocket)
-                # await manager.send_move(data, websocket, db)
         except WebSocketDisconnect:
             manager.disconnect(websocket)
 
