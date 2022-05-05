@@ -1,16 +1,20 @@
 import Board from "../components/Board";
 import GameInfo from "../components/GameInfo";
 import { useReducer } from "react";
-import { getMoves, checkCastlingRights, getOrgBoardProps } from "../helpers/utils";
+import {
+  getMoves,
+  checkCastlingRights,
+  getOrgBoardProps,
+} from "../helpers/utils";
 import { useSearchParams } from "react-router-dom";
 
 export function reducer(boardProps, action) {
   switch (action.action) {
     case "show-moves":
-      if (action.board[action.index].color !== boardProps.currentMove) {
+      if (boardProps.board[action.index].color !== boardProps.currentMove) {
         return boardProps;
       }
-      const indexes = getMoves(action.board, boardProps, action.index);
+      const indexes = getMoves(boardProps, action.index);
       if (boardProps.movingPiece === action.index) {
         return {
           ...boardProps,
@@ -34,27 +38,21 @@ export function reducer(boardProps, action) {
       let returnObj = { ...boardProps };
       returnObj[`${action.kingColor}InCheck`] = true;
       return returnObj;
-    case "moved-piece":
-      let finalObj = { ...boardProps };
-      let movingPiece = action.movingPiece
-        ? action.movingPiece
-        : boardProps.movingPiece;
-      checkCastlingRights(
-        movingPiece,
-        action.board[movingPiece].pieceType,
-        boardProps,
-        finalObj
-      );
-      finalObj.isMoving = false;
-      finalObj.currentMove =
-        boardProps.currentMove === "white" ? "black" : "white";
-      if (finalObj[`${boardProps.currentMove}InCheck`]) {
-        finalObj[`${boardProps.currentMove}InCheck`] = false;
-      }
-      finalObj.isMoving = false;
-      finalObj.movingPiece = null;
-      finalObj.movableSquares = [];
-      return finalObj;
+    case "move-piece":
+      return {
+        ...checkCastlingRights(
+          action.movingPiece,
+          action.board[action.movingPiece].pieceType,
+          boardProps
+        ),
+        isMoving: false,
+        currentMove: boardProps.currentMove === "white" ? "black" : "white",
+        whiteInCheck: false,
+        blackInCheck: false,
+        movingPiece: null,
+        movableSquares: [],
+        board: action.board,
+      };
   }
 }
 

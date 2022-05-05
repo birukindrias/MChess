@@ -4,8 +4,12 @@ import GameInfo from "../components/GameInfo";
 import WaitingArea from "../components/WaitingArea";
 import useAuth from "../hooks/useAuth";
 import OnlineBoard from "../components/OnlineBoard";
-import { movePiece } from "../components/Board";
-import { getMoves, checkCastlingRights, orgBoard, getOrgBoardProps } from "../helpers/utils";
+import { movePiece } from "../helpers/gameUtils";
+import {
+  getMoves,
+  checkCastlingRights,
+  getOrgBoardProps,
+} from "../helpers/utils";
 
 function getTimeFormat(gameInfo) {
   const time = gameInfo.time;
@@ -23,10 +27,10 @@ function sendMove(fromIndex, toIndex, ws) {
 function reducer(boardProps, action) {
   switch (action.action) {
     case "show-moves":
-      if (action.board[action.index].color !== boardProps.currentMove) {
+      if (boardProps.board[action.index].color !== boardProps.currentMove) {
         return boardProps;
       }
-      const indexes = getMoves(action.board, boardProps, action.index);
+      const indexes = getMoves(boardProps, action.index);
       if (boardProps.movingPiece === action.index) {
         return {
           ...boardProps,
@@ -50,30 +54,21 @@ function reducer(boardProps, action) {
       let returnObj = { ...boardProps };
       returnObj[`${action.kingColor}InCheck`] = true;
       return returnObj;
-    case "moved-piece":
-      let finalObj = { ...boardProps };
-      let movingPiece = action.movingPiece
-        ? action.movingPiece
-        : boardProps.movingPiece;
-      checkCastlingRights(
-        movingPiece,
-        action.board[movingPiece].pieceType,
-        boardProps,
-        finalObj
-      );
-      finalObj.isMoving = false;
-      finalObj.currentMove =
-        boardProps.currentMove === "white" ? "black" : "white";
-      if (finalObj[`${boardProps.currentMove}InCheck`]) {
-        finalObj[`${boardProps.currentMove}InCheck`] = false;
-      }
-      finalObj.isMoving = false;
-      finalObj.movingPiece = null;
-      finalObj.movableSquares = [];
-      console.log("BoardProps was: ")
-      console.log(boardProps);
-      console.log(finalObj);
-      return finalObj;
+    case "move-piece":
+      return {
+        ...checkCastlingRights(
+          action.movingPiece,
+          action.board[action.movingPiece].pieceType,
+          boardProps
+        ),
+        isMoving: false,
+        currentMove: boardProps.currentMove === "white" ? "black" : "white",
+        whiteInCheck: false,
+        blackInCheck: false,
+        movingPiece: null,
+        movableSquares: [],
+        board: action.board,
+      };
     case "update-moving-piece":
       return {
         ...boardProps,
@@ -86,13 +81,12 @@ export default function OnlineGame() {
   const params = useParams();
   const [gameId] = useState(params.gameId);
   const [gameInfo, setGameInfo] = useState({});
-  const [board, setBoard] = useState(orgBoard);
   const [boardProps, dispatch] = useReducer(reducer, getOrgBoardProps(true));
   const [isWaiting, setIsWaiting] = useState(true);
   const { user, token } = useAuth();
   const [isWatcher, setIsWatcher] = useState(false);
   const [ws] = useState(
-    new WebSocket(`ws://192.168.8.109:8000/api/game/${gameId}/`)
+    new WebSocket(`ws://192.168.8.100:8000/api/game/${gameId}/`)
   );
 
   const makeMove = useCallback(
@@ -106,24 +100,20 @@ export default function OnlineGame() {
 
       if (!isWatcher && boardProps.currentMove === player_color) {
         sendMove(boardProps.movingPiece, toIndex, ws);
-        setBoard((board) => {
-          return movePiece(
-            board,
-            boardProps,
-            dispatch,
-            boardProps.movingPiece,
-            toIndex
-          );
-        });
+        movePiece(boardProps, dispatch, boardProps.movingPiece, toIndex);
       }
     },
     [ws, boardProps]
   );
 
   useEffect(() => {
-    ws.addEventListener("open", (ev) => {
+    ws.addEventListener("open", () => {
       ws.send(token);
     });
+    return () => ws.close();
+  }, []);
+
+  useEffect(() => {
     ws.onmessage = (ev) => {
       const data = JSON.parse(ev.data);
       switch (data.type) {
@@ -150,27 +140,21 @@ export default function OnlineGame() {
             });
             setIsWaiting(false);
           } else if (data.action === "make-move") {
-            setBoard((board) => {
-              return movePiece(
-                board,
-                boardProps,
-                dispatch,
-                data.fromIndex,
-                data.toIndex
-              );
-            });
+            movePiece(boardProps, dispatch, data.fromIndex, data.toIndex);
           }
           break;
         case "error":
+          console.log(data.detail);
+          break;
       }
     };
+
     return () => ws.close();
-  }, []);
+  }, [boardProps, ws]);
 
   return (
     <div className="container">
       <OnlineBoard
-        board={board}
         boardProps={boardProps}
         dispatch={dispatch}
         player_color={

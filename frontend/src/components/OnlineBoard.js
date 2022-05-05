@@ -1,11 +1,11 @@
 import Square from "../components/Square";
 import { getSquareColor } from "../helpers/utils";
 
-function OnlineBoard({ board, boardProps, dispatch, player_color, makeMove }) {
+function OnlineBoard({ boardProps, dispatch, player_color, makeMove }) {
   return (
     <>
       <div className="board">
-        {board.map((piece, i) => {
+        {boardProps.board.map((piece, i) => {
           return (
             <Square
               piece={piece}
@@ -20,7 +20,7 @@ function OnlineBoard({ board, boardProps, dispatch, player_color, makeMove }) {
                   dispatch({
                     action: "show-moves",
                     index,
-                    board,
+                    board: boardProps.board,
                   });
                 }
               }}

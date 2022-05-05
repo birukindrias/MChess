@@ -191,36 +191,33 @@ export function checkPromotion(board, curIndex, toIndex) {
   }
 }
 
-export function checkCastlingRights(
-  currentPieceIndex,
-  pieceType,
-  boardProps,
-  returnObj
-) {
+export function checkCastlingRights(currentPieceIndex, pieceType, boardProps) {
+  let finalObj = { ...boardProps };
   if (pieceType === "K") {
     if (boardProps.currentMove === "white") {
-      returnObj.canWhiteKingSideCastle = false;
-      returnObj.canWhiteQueenSideCastle = false;
+      finalObj.canWhiteKingSideCastle = false;
+      finalObj.canWhiteQueenSideCastle = false;
     } else {
-      returnObj.canBlackKingSideCastle = false;
-      returnObj.canBlackQueenSideCastle = false;
+      finalObj.canBlackKingSideCastle = false;
+      finalObj.canBlackQueenSideCastle = false;
     }
   } else if (pieceType === "R" && [0, 7, 56, 63].includes(currentPieceIndex)) {
     switch (currentPieceIndex) {
       case 7:
-        returnObj.canWhiteQueenSideCastle = false;
+        finalObj.canWhiteQueenSideCastle = false;
         break;
       case 0:
-        returnObj.canWhiteKingSideCastle = false;
+        finalObj.canWhiteKingSideCastle = false;
         break;
       case 56:
-        returnObj.canBlackKingSideCastle = false;
+        finalObj.canBlackKingSideCastle = false;
         break;
       case 63:
-        returnObj.canBlackQueenSideCastle = false;
+        finalObj.canBlackQueenSideCastle = false;
         break;
     }
   }
+  return finalObj;
 }
 
 export function castledBoard(board, kingIndex, toIndex) {
@@ -251,8 +248,9 @@ function notationToRowCol(notation) {
   };
 }
 
-export function getMoves(board, boardProps, index) {
+export function getMoves(boardProps, index) {
   let movableIndexes = [];
+  let board = boardProps.board;
   const pieceType = board[index].pieceType;
   switch (pieceType) {
     case "R":
@@ -297,18 +295,16 @@ export function getMoves(board, boardProps, index) {
         `PieceType at ${index} is ${pieceType}. This pieceType doesn't exist.`
       );
   }
-  // don't allow moves that don't block the check
-  if (boardProps[`${boardProps.currentMove}InCheck`] || pieceType === "K") {
-    movableIndexes = movableIndexes.filter((toIndex) => {
-      if (board[toIndex] === "") {
-        return !inCheck(swap(board, index, toIndex), boardProps.currentMove);
-      } else {
-        let tmp = [...board];
-        tmp[toIndex] = "";
-        return !inCheck(swap(tmp, toIndex, index), boardProps.currentMove);
-      }
-    });
-  }
+  // don't allow moves that would make the king in check
+  movableIndexes = movableIndexes.filter((toIndex) => {
+    if (board[toIndex] === "") {
+      return !inCheck(swap(board, index, toIndex), boardProps.currentMove);
+    } else {
+      let tmp = [...board];
+      tmp[toIndex] = "";
+      return !inCheck(swap(tmp, toIndex, index), boardProps.currentMove);
+    }
+  });
   return movableIndexes;
 }
 
@@ -345,22 +341,6 @@ export function isCastling(board, currentIndex, toIndex, boardProps) {
     default:
       return false;
   }
-}
-
-export function getOrgBoardProps(running) {
-  return {
-    currentMove: "white",
-    isMoving: false,
-    movableSquares: [],
-    movingPiece: null,
-    canWhiteKingSideCastle: true,
-    canWhiteQueenSideCastle: true,
-    canBlackKingSideCastle: true,
-    canBlackQueenSideCastle: true,
-    whiteInCheck: false,
-    blackInCheck: false,
-    gameEnd: !running,
-  };
 }
 
 export const orgBoard = [
@@ -400,3 +380,20 @@ export const orgBoard = [
     { color: "black", pieceType: "H" },
     { color: "black", pieceType: "R" },
   ]);
+
+export function getOrgBoardProps(running) {
+  return {
+    board: orgBoard,
+    currentMove: "white",
+    isMoving: false,
+    movableSquares: [],
+    movingPiece: null,
+    canWhiteKingSideCastle: true,
+    canWhiteQueenSideCastle: true,
+    canBlackKingSideCastle: true,
+    canBlackQueenSideCastle: true,
+    whiteInCheck: false,
+    blackInCheck: false,
+    gameEnd: !running,
+  };
+}
