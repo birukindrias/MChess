@@ -42,12 +42,12 @@ managers: Dict[int, GameManager] = dict()
 @game_router.websocket("/game/{game_id}/")
 async def run_game(game_id: int, websocket: WebSocket, db: Session = Depends(get_db)):
     if not managers.get(game_id):
-        manager = GameManager()
+        manager = GameManager(game_id, db)
         managers[game_id] = manager
     else:
         manager = managers[game_id]
 
-    manager.set_game_id(game_id, db)
+    manager.update_db(db)
     await websocket.accept()
     verified = False
     while not verified:

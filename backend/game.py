@@ -23,16 +23,16 @@ org_board_props = {
 
 
 class GameManager:
-    def __init__(self):
+    def __init__(self, game_id: int, db: Session):
         self.game_members: List[Dict] = []
         self.game_watchers: List[WebSocket] = []
-        self.game_full = False
-        self.game_id = None
-        self.game_started = False
-        self.game: models.LiveGame = None
-
-    def set_game_id(self, game_id: int, db: Session):
         self.game_id = game_id
+        self.game_started = False
+        self.game: models.LiveGame = (
+            db.query(models.LiveGame).filter_by(id=self.game_id).first()
+        )
+
+    def update_db(self, db: Session):
         self.game = db.query(models.LiveGame).filter_by(id=self.game_id).first()
 
     # async def send_move(self, data: dict, websocket: WebSocket, db: Session):
@@ -90,18 +90,16 @@ class GameManager:
                 )
 
         else:
-            if (
-                self.game_members[0]["user"] != user.username
-                and not self.game.black_player
-            ):
+            for player in self.game_members:
+                if player["user"] == user.username:
+                    await self.send_error(websocket, "You have already joined the game")
+                    return
+
+            if not self.game.black_player:
                 await self.add_player(user.username, "black", websocket, db)
-            elif (
-                self.game_members[0]["user"] != user.username
-                and not self.game.white_player
-            ):
+            elif not self.game.white_player:
                 await self.add_player(user.username, "white", websocket, db)
-            else:
-                await self.send_error(websocket, "You have already joined the game")
+
             for player in self.game_members:
                 await self.send_command(player["websocket"], "start-game", self.game)
             self.game_started = True
@@ -134,3 +132,4 @@ class GameManager:
             for player in self.game_members.copy():
                 if player["websocket"] == websocket:
                     self.game_members.remove(player)
+                    break

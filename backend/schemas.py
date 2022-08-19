@@ -23,8 +23,6 @@ class LiveGame(BaseModel):
     id: int
     white_player: str
     black_player: str
-    white_time: str
-    black_time: str
     time: int
     increment: int
     game_end: bool

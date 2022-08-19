@@ -5,77 +5,8 @@ import WaitingArea from "../components/WaitingArea";
 import useAuth from "../hooks/useAuth";
 import OnlineBoard from "../components/OnlineBoard";
 import { movePiece } from "../helpers/gameUtils";
-import {
-  getMoves,
-  checkCastlingRights,
-  getOrgBoardProps,
-} from "../helpers/utils";
-
-function getTimeFormat(gameInfo) {
-  const time = gameInfo.time;
-  const increment = gameInfo.increment;
-
-  return `${time}|${increment}`;
-}
-
-function sendMove(fromIndex, toIndex, ws) {
-  ws.send(
-    JSON.stringify({ type: "command", action: "make-move", fromIndex, toIndex })
-  );
-}
-
-function reducer(boardProps, action) {
-  switch (action.action) {
-    case "show-moves":
-      if (boardProps.board[action.index].color !== boardProps.currentMove) {
-        return boardProps;
-      }
-      const indexes = getMoves(boardProps, action.index);
-      if (boardProps.movingPiece === action.index) {
-        return {
-          ...boardProps,
-          isMoving: false,
-          movableSquares: [],
-          movingPiece: null,
-        };
-      }
-      return {
-        ...boardProps,
-        isMoving: true,
-        movableSquares: indexes,
-        movingPiece: action.index,
-      };
-    case "end-game":
-      return {
-        ...boardProps,
-        gameEnd: true,
-      };
-    case "in-check":
-      let returnObj = { ...boardProps };
-      returnObj[`${action.kingColor}InCheck`] = true;
-      return returnObj;
-    case "move-piece":
-      return {
-        ...checkCastlingRights(
-          action.movingPiece,
-          action.board[action.movingPiece].pieceType,
-          boardProps
-        ),
-        isMoving: false,
-        currentMove: boardProps.currentMove === "white" ? "black" : "white",
-        whiteInCheck: false,
-        blackInCheck: false,
-        movingPiece: null,
-        movableSquares: [],
-        board: action.board,
-      };
-    case "update-moving-piece":
-      return {
-        ...boardProps,
-        movingPiece: action.index,
-      };
-  }
-}
+import { getOrgBoardProps } from "../helpers/utils";
+import { getTimeFormat, sendMove, reducer } from "../helpers/onlineGameUtils";
 
 export default function OnlineGame() {
   const params = useParams();

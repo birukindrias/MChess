@@ -45,12 +45,9 @@ async def create_access_token(data: dict, expires_delta: Optional[timedelta] = N
 async def authenticate_access_token(
     token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
 ):
-    try:
-        decoded = jwt.decode(
-            token, config["SECRET_KEY"], algorithms=[config["ALGORITHM"]]
-        )
-        user = db.query(models.User).get(decoded["sub"])
-    except Exception:
+    decoded = jwt.decode(token, config["SECRET_KEY"], algorithms=[config["ALGORITHM"]])
+    user = db.query(models.User).get(decoded["sub"])
+    if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Credentials"
         )
