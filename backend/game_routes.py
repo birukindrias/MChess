@@ -1,20 +1,20 @@
-from typing import Dict, List
+from typing import Dict
 
-from fastapi import Depends, WebSocket
-from fastapi.exceptions import HTTPException
+from fastapi import (APIRouter, Depends, HTTPException, WebSocket,
+                     WebSocketDisconnect, status)
 from sqlalchemy.orm import Session
-from starlette import status
-from starlette.websockets import WebSocketDisconnect
 
 from backend import schemas
 
-from . import app, crud, models
-from .auth import authenticate_access_token, oauth2_scheme
+from . import crud, models
+from .auth import authenticate_access_token
 from .db import get_db
 from .game import GameManager
 
+game_router = APIRouter(prefix="/api")
 
-@app.post("/api/create_game/")
+
+@game_router.post("/create_game/")
 async def create_game(
     game: schemas.GameCreate,
     user: models.User = Depends(authenticate_access_token),
@@ -25,7 +25,7 @@ async def create_game(
     return created_game
 
 
-@app.get("/api/game")
+@game_router.get("/game")
 async def get_game(game_id: int, db: Session = Depends(get_db)):
     game = await crud.get_live_game(db, game_id)
     if not game:
@@ -39,7 +39,7 @@ async def get_game(game_id: int, db: Session = Depends(get_db)):
 managers: Dict[int, GameManager] = dict()
 
 
-@app.websocket("/api/game/{game_id}/")
+@game_router.websocket("/game/{game_id}/")
 async def run_game(game_id: int, websocket: WebSocket, db: Session = Depends(get_db)):
     if not managers.get(game_id):
         manager = GameManager()
@@ -69,6 +69,6 @@ async def run_game(game_id: int, websocket: WebSocket, db: Session = Depends(get
             manager.disconnect(websocket)
 
 
-@app.get("/test/")
+@game_router.get("/test/")
 async def test():
     return {"hello": "mike"}

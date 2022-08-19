@@ -37,7 +37,6 @@ const moveAudio = new Audio(moveSound);
 const captureAudio = new Audio(captureSound);
 
 export function movePiece(boardProps, dispatch, fromIndex, toIndex) {
-  console.log(boardProps.board);
   let finalBoard;
   const board = boardProps.board;
   if (isCastling(board, fromIndex, toIndex, boardProps)) {
@@ -77,7 +76,6 @@ export function movePiece(boardProps, dispatch, fromIndex, toIndex) {
     finalBoard[toIndex] = "";
     finalBoard = swap(finalBoard, toIndex, fromIndex);
     captureAudio.play();
-    console.log(finalBoard);
     dispatch({
       action: "move-piece",
       board: finalBoard,

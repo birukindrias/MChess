@@ -2,15 +2,12 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from dotenv import dotenv_values
-from fastapi import status
-from fastapi.exceptions import HTTPException
-from fastapi.param_functions import Depends
-from fastapi.security import OAuth2PasswordBearer
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jose import jwt
-from sqlalchemy.orm.session import Session
+from sqlalchemy.orm import Session
 
-from . import app, crud, models
+from . import crud, models
 from .db import get_db
 from .hashing import verify_password
 from .schemas import User
@@ -18,6 +15,7 @@ from .schemas import User
 config = dotenv_values("backend/.env")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token/")
+auth_router = APIRouter(prefix="/api")
 
 
 async def authenticate_user(db: Session, username, password):
@@ -60,7 +58,7 @@ async def authenticate_access_token(
     return user
 
 
-@app.post("/api/token/")
+@auth_router.post("/token/")
 async def token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
@@ -80,6 +78,6 @@ async def token(
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@app.get("/api/me/", response_model=User)
+@auth_router.get("/me/", response_model=User)
 async def get_current_user(user=Depends(authenticate_access_token)):
     return User.from_orm(user)

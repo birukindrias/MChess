@@ -1,11 +1,13 @@
-from fastapi import status
+from fastapi import FastAPI, status
 from fastapi.exceptions import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.param_functions import Depends
 from sqlalchemy.orm import Session
 
-from . import app, auth, crud, game_routes, models, schemas
+from . import auth, crud, game_routes, models, schemas
+from .auth import auth_router
 from .db import engine, get_db
+from .game_routes import game_router
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -13,6 +15,7 @@ models.Base.metadata.create_all(bind=engine)
 origins = ["http://localhost:3000", "http://192.168.8.107:3000"]
 # origins = ["*"]
 
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -20,6 +23,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.include_router(auth_router)
+app.include_router(game_router)
 
 
 @app.post("/api/users/", response_model=schemas.User)

@@ -86,7 +86,7 @@ export default function OnlineGame() {
   const { user, token } = useAuth();
   const [isWatcher, setIsWatcher] = useState(false);
   const [ws] = useState(
-    new WebSocket(`ws://192.168.8.100:8000/api/game/${gameId}/`)
+    new WebSocket(`ws://${process.env.REACT_APP_SERVER_IP}/api/game/${gameId}/`)
   );
 
   const makeMove = useCallback(
@@ -148,8 +148,6 @@ export default function OnlineGame() {
           break;
       }
     };
-
-    return () => ws.close();
   }, [boardProps, ws]);
 
   return (
@@ -169,7 +167,7 @@ export default function OnlineGame() {
       {isWaiting ? (
         <WaitingArea
           setIsWaiting={setIsWaiting}
-          gameUrl={`http://localhost:3000${window.location.pathname}`}
+          gameUrl={`http://${process.env.REACT_APP_SERVER_IP}${window.location.pathname}`}
         />
       ) : (
         <GameInfo
