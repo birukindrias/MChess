@@ -30,7 +30,7 @@ export default function OnlineGame() {
           : null;
 
       if (!isWatcher && boardProps.currentMove === player_color) {
-        sendMove(boardProps.movingPiece, toIndex, ws);
+        sendMove(boardProps, boardProps.movingPiece, toIndex, ws);
       }
     },
     [ws, boardProps]
@@ -49,6 +49,7 @@ export default function OnlineGame() {
       switch (data.type) {
         case "command":
           if (data.action === "start-game") {
+            console.log("starting game");
             setGameInfo({
               white: data.game.white_player,
               black: data.game.black_player,
@@ -57,6 +58,7 @@ export default function OnlineGame() {
               game_end: data.game.game_end,
               game_moves: data.game.game_moves,
             });
+            dispatch({ action: "set-boardprops", boardProps: data.boardProps });
             setIsWaiting(false);
           } else if (data.action === "start-watching") {
             setIsWatcher(true);

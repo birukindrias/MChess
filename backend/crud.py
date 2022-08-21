@@ -47,6 +47,7 @@ async def create_game(db: Session, user: schemas.User, game: schemas.GameCreate)
             board_props=org_board_props,
             game_end=False,
             game_moves={},
+            game_started=False,
         )
     else:
         game = models.LiveGame(
@@ -56,6 +57,7 @@ async def create_game(db: Session, user: schemas.User, game: schemas.GameCreate)
             board_props=org_board_props,
             game_end=False,
             game_moves={},
+            game_started=False,
         )
 
     db.add(game)

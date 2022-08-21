@@ -22,6 +22,7 @@ class LiveGame(Base):
     white_player = Column(String, ForeignKey("users.username"))
     black_player = Column(String, ForeignKey("users.username"))
     board_props = Column(JSON)
+    game_started = Column(Boolean)
     time = Column(Integer)
     increment = Column(Integer)
     game_end = Column(Boolean)

@@ -7,9 +7,15 @@ export function getTimeFormat(gameInfo) {
   return `${time}|${increment}`;
 }
 
-export function sendMove(fromIndex, toIndex, ws) {
+export function sendMove(boardProps, fromIndex, toIndex, ws) {
   ws.send(
-    JSON.stringify({ type: "command", action: "make-move", fromIndex, toIndex })
+    JSON.stringify({
+      type: "command",
+      action: "make-move",
+      boardProps,
+      fromIndex,
+      toIndex,
+    })
   );
 }
 
@@ -58,10 +64,7 @@ export function reducer(boardProps, action) {
         movableSquares: [],
         board: action.board,
       };
-    case "update-moving-piece":
-      return {
-        ...boardProps,
-        movingPiece: action.index,
-      };
+    case "set-boardprops":
+      return action.boardProps;
   }
 }
