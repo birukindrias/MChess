@@ -35,12 +35,6 @@ class GameManager:
     def update_db(self, db: Session):
         self.game = db.query(models.LiveGame).filter_by(id=self.game_id).first()
 
-    # async def send_move(self, data: dict, websocket: WebSocket, db: Session):
-    #     cur_board = data["board"]
-    #     for player in self.game_members:
-    #         if player != websocket:
-    #             await player.send_json(cur_board)
-
     async def add_player(
         self, username: str, type: str, websocket: WebSocket, db: Session
     ):
@@ -55,70 +49,52 @@ class GameManager:
         db.commit()
         db.refresh(self.game)
 
-    async def send_command(
-        self, websocket: WebSocket, action: str, game: models.LiveGame
-    ):
-        await websocket.send_json(
-            {
-                "type": "command",
-                "action": action,
-                "game": schemas.LiveGame.from_orm(game).dict(),
-            }
-        )
+    async def send_command(self, websocket: WebSocket, action: str, **kwargs):
+        sent_json = {"type": "command", "action": action}
+        sent_json.update(kwargs)
+        await websocket.send_json(sent_json)
 
     async def connect(self, user: models.User, websocket: WebSocket, db: Session):
-        if self.game_started and len(self.game_members) == 2:
-            self.game_watchers.append(websocket)
-
-        elif self.game_started and len(self.game_members) < 2:
-            if user.username == self.game.white_player:
+        if self.game_started:
+            if self.game.white_player == user.username:
                 await self.add_player(user.username, "white", websocket, db)
-            elif user.username == self.game.black_player:
+            elif self.game.black_player == user.username:
                 await self.add_player(user.username, "black", websocket, db)
             else:
                 self.game_watchers.append(websocket)
-
-        elif len(self.game_members) < 1:
+        else:
             if user.username == self.game.white_player:
                 await self.add_player(user.username, "white", websocket, db)
             elif user.username == self.game.black_player:
                 await self.add_player(user.username, "black", websocket, db)
             else:
-                await self.send_error(
-                    websocket,
-                    "You have to wait for the person who created the game to join",
-                )
+                if self.game.white_player:
+                    await self.add_player(user.username, "black", websocket, db)
+                elif self.game.black_player:
+                    await self.add_player(user.username, "white", websocket, db)
+                if len(self.game_members) == 2:
+                    self.game_started = True
+                    for player in self.game_members:
+                        await self.send_command(
+                            player["websocket"],
+                            "start-game",
+                            game=schemas.LiveGame.from_orm(self.game).dict(),
+                        )
 
-        else:
-            for player in self.game_members:
-                if player["user"] == user.username:
-                    await self.send_error(websocket, "You have already joined the game")
-                    return
-
-            if not self.game.black_player:
-                await self.add_player(user.username, "black", websocket, db)
-            elif not self.game.white_player:
-                await self.add_player(user.username, "white", websocket, db)
-
-            for player in self.game_members:
-                await self.send_command(player["websocket"], "start-game", self.game)
-            self.game_started = True
-
-    async def make_move(self, fromIndex, toIndex, websocket: WebSocket):
+    async def make_move(self, fromIndex, toIndex):
         for player in self.game_members:
-            if player["websocket"] != websocket:
-                await player["websocket"].send_json(
-                    {
-                        "type": "command",
-                        "action": "make-move",
-                        "fromIndex": fromIndex,
-                        "toIndex": toIndex,
-                    }
-                )
+            await self.send_command(
+                player["websocket"],
+                "make-move",
+                fromIndex=fromIndex,
+                toIndex=toIndex,
+            )
+        for watcher in self.game_watchers:
+            await self.send_command(watcher, "make-move", fromIndex, toIndex)
 
     async def handle_command(self, data: dict, websocket: WebSocket):
         if data["action"] == "make-move":
-            await self.make_move(data["fromIndex"], data["toIndex"], websocket)
+            await self.make_move(data["fromIndex"], data["toIndex"])
 
     async def send_error(self, websocket: WebSocket, detail: str):
         msg = {"type": "error", "detail": detail}

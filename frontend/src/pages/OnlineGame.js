@@ -31,7 +31,6 @@ export default function OnlineGame() {
 
       if (!isWatcher && boardProps.currentMove === player_color) {
         sendMove(boardProps.movingPiece, toIndex, ws);
-        movePiece(boardProps, dispatch, boardProps.movingPiece, toIndex);
       }
     },
     [ws, boardProps]
@@ -98,7 +97,7 @@ export default function OnlineGame() {
       {isWaiting ? (
         <WaitingArea
           setIsWaiting={setIsWaiting}
-          gameUrl={`http://${process.env.REACT_APP_SERVER_IP}${window.location.pathname}`}
+          gameUrl={`http://${process.env.REACT_APP_FRONTEND_IP}${window.location.pathname}`}
         />
       ) : (
         <GameInfo
