@@ -95,7 +95,9 @@ function checkCanAttackKing(board, index, kingIndex) {
 
 export function inCheck(board, kingColor) {
   const kingIndex = board.findIndex((curPiece) => {
-    if (curPiece.color === kingColor && curPiece.pieceType === "K") {
+    if (!curPiece) {
+      return false;
+    } else if (curPiece.color === kingColor && curPiece.pieceType === "K") {
       return true;
     } else {
       return false;

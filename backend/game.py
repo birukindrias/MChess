@@ -151,11 +151,12 @@ class GameManager:
 
     async def handle_command(self, data: dict, websocket: WebSocket):
         if data["action"] == "make-move":
+            await self.make_move(data["fromIndex"], data["toIndex"])
+        elif data["action"] == "update-boardProps":
             self.game.board_props = data["boardProps"]
             self.db.add(self.game)
             self.db.commit()
             self.db.refresh(self.game)
-            await self.make_move(data["fromIndex"], data["toIndex"])
 
     async def send_error(self, websocket: WebSocket, detail: str):
         msg = {"type": "error", "detail": detail}

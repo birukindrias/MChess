@@ -9,7 +9,7 @@ import {
 import moveSound from "../assets/sounds/Move.ogg";
 import captureSound from "../assets/sounds/Capture.ogg";
 
-export function setInCheck(board, boardProps, setBoardProps) {
+export function setInCheck(board, boardProps, setBoardProps, callback) {
   const curMove = boardProps.currentMove;
   const kingColor = curMove === "white" ? "black" : "white";
   const kingIndex = board.findIndex((curPiece) => {
@@ -25,10 +25,10 @@ export function setInCheck(board, boardProps, setBoardProps) {
       const kingPiece = document.querySelectorAll(".square")[kingIndex];
       kingPiece.classList.add("kingCheck");
 
-      setBoardProps({ action: "end-game" });
+      setBoardProps({ action: "end-game", callback });
       return;
     } else {
-      setBoardProps({ action: "in-check", kingColor: kingColor });
+      setBoardProps({ action: "in-check", kingColor: kingColor, callback });
     }
   }
 }
@@ -36,7 +36,7 @@ export function setInCheck(board, boardProps, setBoardProps) {
 const moveAudio = new Audio(moveSound);
 const captureAudio = new Audio(captureSound);
 
-export function movePiece(boardProps, dispatch, fromIndex, toIndex) {
+export function movePiece(boardProps, dispatch, fromIndex, toIndex, callback) {
   let finalBoard;
   const board = boardProps.board;
   if (isCastling(board, fromIndex, toIndex, boardProps)) {
@@ -45,23 +45,25 @@ export function movePiece(boardProps, dispatch, fromIndex, toIndex) {
     dispatch({
       action: "move-piece",
       board: finalBoard,
-      movingPiece: fromIndex,
+      movingPiece: toIndex,
+      callback,
     });
     return finalBoard;
   } else if (board[toIndex] === "") {
     moveAudio.play();
-    let tmp = [...board];
+    let finalBoard = [...board];
     if (checkPromotion(board, fromIndex, toIndex)) {
-      tmp[fromIndex] = {
-        color: board[fromIndex].color,
+      finalBoard[fromIndex] = {
+        color: finalBoard[fromIndex].color,
         pieceType: "Q",
       };
     }
-    finalBoard = swap(board, fromIndex, toIndex);
+    finalBoard = swap(finalBoard, fromIndex, toIndex);
     dispatch({
       action: "move-piece",
       board: finalBoard,
-      movingPiece: fromIndex,
+      movingPiece: toIndex,
+      callback,
     });
     setInCheck(finalBoard, boardProps, dispatch);
     return finalBoard;
@@ -79,7 +81,8 @@ export function movePiece(boardProps, dispatch, fromIndex, toIndex) {
     dispatch({
       action: "move-piece",
       board: finalBoard,
-      movingPiece: fromIndex,
+      movingPiece: toIndex,
+      callback,
     });
     setInCheck(finalBoard, boardProps, dispatch);
     return finalBoard;

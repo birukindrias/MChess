@@ -30,10 +30,23 @@ export default function OnlineGame() {
           : null;
 
       if (!isWatcher && boardProps.currentMove === player_color) {
-        sendMove(boardProps, boardProps.movingPiece, toIndex, ws);
+        sendMove(boardProps.movingPiece, toIndex, ws);
       }
     },
     [ws, boardProps]
+  );
+
+  const sendBoardProps = useCallback(
+    (boardProps) => {
+      ws.send(
+        JSON.stringify({
+          type: "command",
+          action: "update-boardprops",
+          boardProps,
+        })
+      );
+    },
+    [ws]
   );
 
   useEffect(() => {
@@ -72,7 +85,13 @@ export default function OnlineGame() {
             });
             setIsWaiting(false);
           } else if (data.action === "make-move") {
-            movePiece(boardProps, dispatch, data.fromIndex, data.toIndex);
+            movePiece(
+              boardProps,
+              dispatch,
+              data.fromIndex,
+              data.toIndex,
+              sendBoardProps
+            );
           }
           break;
         case "error":

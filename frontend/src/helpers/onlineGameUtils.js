@@ -7,12 +7,11 @@ export function getTimeFormat(gameInfo) {
   return `${time}|${increment}`;
 }
 
-export function sendMove(boardProps, fromIndex, toIndex, ws) {
+export function sendMove(fromIndex, toIndex, ws) {
   ws.send(
     JSON.stringify({
       type: "command",
       action: "make-move",
-      boardProps,
       fromIndex,
       toIndex,
     })
@@ -41,6 +40,7 @@ export function reducer(boardProps, action) {
         movingPiece: action.index,
       };
     case "end-game":
+      action.callback({ ...boardProps, gameEnd: true });
       return {
         ...boardProps,
         gameEnd: true,
@@ -48,9 +48,10 @@ export function reducer(boardProps, action) {
     case "in-check":
       let returnObj = { ...boardProps };
       returnObj[`${action.kingColor}InCheck`] = true;
+      action.callback(returnObj);
       return returnObj;
     case "move-piece":
-      return {
+      const finalBoardProps = {
         ...checkCastlingRights(
           action.movingPiece,
           action.board[action.movingPiece].pieceType,
@@ -64,6 +65,8 @@ export function reducer(boardProps, action) {
         movableSquares: [],
         board: action.board,
       };
+      action.callback(finalBoardProps);
+      return finalBoardProps;
     case "set-boardprops":
       return action.boardProps;
   }
