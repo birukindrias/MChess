@@ -41,7 +41,7 @@ export default function OnlineGame() {
       ws.send(
         JSON.stringify({
           type: "command",
-          action: "update-boardprops",
+          action: "update-boardProps",
           boardProps,
         })
       );

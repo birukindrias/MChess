@@ -125,18 +125,18 @@ class GameManager:
                     await self.add_player(user.username, "black", websocket)
                 elif self.game.black_player:
                     await self.add_player(user.username, "white", websocket)
-                if len(self.game_members) == 2:
-                    self.game.game_started = True
-                    self.db.add(self.game)
-                    self.db.commit()
-                    self.db.refresh(self.game)
-                    self.game_started = True
-                    for player in self.game_members:
-                        await self.send_start_command(
-                            player["websocket"],
-                            schemas.LiveGame.from_orm(self.game).dict(),
-                            self.game.board_props,
-                        )
+            if len(self.game_members) == 2:
+                self.game.game_started = True
+                self.db.add(self.game)
+                self.db.commit()
+                self.db.refresh(self.game)
+                self.game_started = True
+                for player in self.game_members:
+                    await self.send_start_command(
+                        player["websocket"],
+                        schemas.LiveGame.from_orm(self.game).dict(),
+                        self.game.board_props,
+                    )
 
     async def make_move(self, fromIndex, toIndex):
         for player in self.game_members:

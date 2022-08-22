@@ -65,7 +65,7 @@ export function movePiece(boardProps, dispatch, fromIndex, toIndex, callback) {
       movingPiece: toIndex,
       callback,
     });
-    setInCheck(finalBoard, boardProps, dispatch);
+    setInCheck(finalBoard, boardProps, dispatch, callback);
     return finalBoard;
   } else {
     let finalBoard = [...board];
@@ -84,7 +84,7 @@ export function movePiece(boardProps, dispatch, fromIndex, toIndex, callback) {
       movingPiece: toIndex,
       callback,
     });
-    setInCheck(finalBoard, boardProps, dispatch);
+    setInCheck(finalBoard, boardProps, dispatch, callback);
     return finalBoard;
   }
 }
