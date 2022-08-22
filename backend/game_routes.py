@@ -41,23 +41,31 @@ managers: Dict[int, GameManager] = dict()
 
 @game_router.websocket("/game/{game_id}/")
 async def run_game(game_id: int, websocket: WebSocket):
-    if not managers.get(game_id):
-        manager = GameManager(game_id, next(get_db()))
-        managers[game_id] = manager
-    else:
-        manager = managers[game_id]
 
     await websocket.accept()
+    db = next(get_db())
+
     verified = False
     while not verified:
         data = await websocket.receive_text()
-        user = await authenticate_access_token(data, manager.db)
-        if user:
-            verified = True
-            await manager.connect(user, websocket)
-            break
+        try:
+            user = await authenticate_access_token(data, db)
+        except HTTPException:
+            await websocket.close(reason="Invalid Credentials")
+            return
+
+        if not db.query(models.LiveGame).filter_by(id=game_id).first():
+            await websocket.close(reason="Game doesn't exist")
+            return
+
+        if not managers.get(game_id):
+            manager = GameManager(game_id, db)
+            managers[game_id] = manager
         else:
-            await websocket.send_text("Invalid credentials")
+            manager = managers[game_id]
+            verified = True
+        await manager.connect(user, websocket)
+        break
 
     if verified:
         try:

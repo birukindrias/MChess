@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../assets/css/Login.module.css";
 import ErrorImage from "../assets/images/error.png";
 import useAuth from "../hooks/useAuth";
@@ -55,6 +55,9 @@ export default function Login() {
         placeholder="Password"
       />
       <input type="submit" value="Login" />
+      <Link className={styles.register} to={"/register"}>
+        Don't Have An Account?
+      </Link>
     </form>
   );
 }

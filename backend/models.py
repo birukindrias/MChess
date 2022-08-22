@@ -26,7 +26,7 @@ class LiveGame(Base):
     time = Column(Integer)
     increment = Column(Integer)
     game_end = Column(Boolean)
-    game_moves = Column(JSON)
+    game_moves = Column(String)
     white_target_time = Column(DateTime)
     black_target_time = Column(DateTime)
 

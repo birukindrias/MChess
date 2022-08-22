@@ -1,5 +1,5 @@
 import { useEffect, useState, useReducer, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import GameInfo from "../components/GameInfo";
 import WaitingArea from "../components/WaitingArea";
 import useAuth from "../hooks/useAuth";
@@ -10,6 +10,7 @@ import { getTimeFormat, sendMove, reducer } from "../helpers/onlineGameUtils";
 
 export default function OnlineGame() {
   const params = useParams();
+  const redirect = useNavigate();
   const [gameId] = useState(params.gameId);
   const [gameInfo, setGameInfo] = useState({});
   const [boardProps, dispatch] = useReducer(reducer, getOrgBoardProps(true));
@@ -52,6 +53,13 @@ export default function OnlineGame() {
   useEffect(() => {
     ws.addEventListener("open", () => {
       ws.send(token);
+    });
+    ws.addEventListener("close", (ev) => {
+      if (ev.reason === "Game doesn't exist") {
+        redirect("/");
+      } else if (ev.reason === "Invalid Credentials") {
+        redirect("/login");
+      }
     });
     return () => ws.close();
   }, []);

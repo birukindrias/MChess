@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseModel
 
 
@@ -26,7 +28,7 @@ class LiveGame(BaseModel):
     time: int
     increment: int
     game_end: bool
-    game_moves: dict
+    game_moves: str
 
     class Config:
         orm_mode = True

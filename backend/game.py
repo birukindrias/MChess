@@ -1,11 +1,10 @@
-from typing import Dict, List
+import json
+from typing import Dict, List, Tuple
 
 from fastapi import WebSocket
 from sqlalchemy.orm import Session
 
-from backend import crud, models, schemas
-
-from .models import User
+from backend import models, schemas
 
 org_board: List[Dict] = [
     {"color": "white", "pieceType": "R"},
@@ -73,6 +72,7 @@ class GameManager:
             db.query(models.LiveGame).filter_by(id=self.game_id).first()
         )
         self.game_started = self.game.game_started
+        self.moves: List[Tuple[int, int]] = []
 
     async def add_player(self, username: str, type: str, websocket: WebSocket):
         data = {"user": username, "websocket": websocket}
@@ -139,6 +139,11 @@ class GameManager:
                     )
 
     async def make_move(self, fromIndex, toIndex):
+        self.moves.append((fromIndex, toIndex))
+        self.game.game_moves = json.dumps(self.moves)
+        self.db.add(self.game)
+        self.db.commit()
+        self.db.refresh(self.game)
         for player in self.game_members:
             await self.send_command(
                 player["websocket"],
@@ -157,6 +162,9 @@ class GameManager:
             self.db.add(self.game)
             self.db.commit()
             self.db.refresh(self.game)
+            print(self.game.game_moves)
+            if self.game.board_props["gameEnd"]:
+                pass
 
     async def send_error(self, websocket: WebSocket, detail: str):
         msg = {"type": "error", "detail": detail}
