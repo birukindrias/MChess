@@ -45,8 +45,8 @@ async def create_game(db: Session, user: schemas.User, game: schemas.GameCreate)
             time=game.time,
             increment=game.increment,
             board_props=org_board_props,
+            game_moves="",
             game_end=False,
-            game_moves={},
             game_started=False,
         )
     else:
@@ -55,8 +55,8 @@ async def create_game(db: Session, user: schemas.User, game: schemas.GameCreate)
             time=game.time,
             increment=game.increment,
             board_props=org_board_props,
+            game_moves="",
             game_end=False,
-            game_moves={},
             game_started=False,
         )
 

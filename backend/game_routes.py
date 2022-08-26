@@ -54,6 +54,7 @@ async def run_game(game_id: int, websocket: WebSocket):
             await websocket.close(reason="Invalid Credentials")
             return
 
+        verified = True
         if not db.query(models.LiveGame).filter_by(id=game_id).first():
             await websocket.close(reason="Game doesn't exist")
             return

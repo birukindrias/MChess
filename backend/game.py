@@ -162,7 +162,6 @@ class GameManager:
             self.db.add(self.game)
             self.db.commit()
             self.db.refresh(self.game)
-            print(self.game.game_moves)
             if self.game.board_props["gameEnd"]:
                 pass
 
