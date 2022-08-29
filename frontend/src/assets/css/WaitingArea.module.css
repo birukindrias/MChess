@@ -1,0 +1,16 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.container img {
+  width: 50px;
+}
+
+.container input {
+  padding: 0.5em;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: none;
+}

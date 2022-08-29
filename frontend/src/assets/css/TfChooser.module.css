@@ -1,0 +1,35 @@
+.container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  place-items: center;
+  height: 90%;
+}
+
+.time_format {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2em;
+}
+
+.time_format > a,
+.time_format > button {
+  border-radius: 5px;
+  background-color: #302607;
+  padding: 1em;
+  color: #fff;
+  text-align: center;
+  border: none;
+  font-size: 1rem;
+}
+
+.time_format > a:hover,
+.time_format > button:hover {
+  background-color: #161512;
+  cursor: pointer;
+}
+
+@media (max-width: 990px) {
+  .container {
+    place-items: initial;
+  }
+}

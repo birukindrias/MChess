@@ -1,0 +1,12 @@
+.container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  place-items: center;
+  height: 90%;
+}
+
+@media (max-width: 995px) {
+  .container {
+    place-items: initial;
+  }
+}

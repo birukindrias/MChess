@@ -1,0 +1,45 @@
+.header {
+  font-size: 2rem;
+}
+
+.titleImg {
+  width: 50px;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+}
+
+.links a {
+  display: flex;
+  align-items: center;
+  gap: 1.5em;
+  color: #fff;
+  background-color: #302607;
+  padding: 1em;
+  border-radius: 5px;
+}
+
+.links a:hover {
+  background-color: #161512;
+}
+
+.links img {
+  width: 30px;
+}
+
+@media (max-width: 995px) {
+  .right_nav {
+    width: 100vw;
+  }
+
+  .container {
+    place-items: initial;
+  }
+
+  .right_nav {
+    justify-content: space-between;
+  }
+}
